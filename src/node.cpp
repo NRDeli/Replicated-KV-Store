@@ -14,103 +14,35 @@ Node::Node(const std::string &wal_file,
       voted_for_(-1),
       role_(Role::FOLLOWER),
       running_(true),
-      last_heartbeat_time_(std::chrono::steady_clock::now().time_since_epoch().count()) {}
+      last_heartbeat_time_(std::chrono::steady_clock::now().time_since_epoch().count())
+{
+    nextIndex_.resize(peers.size(), 1);
+    matchIndex_.resize(peers.size(), 0);
+}
 
 void Node::start()
 {
     std::thread(&Node::electionLoop, this).detach();
 }
 
-void Node::electionLoop()
+void Node::recover()
 {
+    auto ops = wal_.replay();
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> timeout_dist(150, 300);
-
-    while (running_)
+    for (const auto &op : ops)
     {
-
-        int timeout_ms = timeout_dist(gen);
-
-        std::this_thread::sleep_for(
-            std::chrono::milliseconds(timeout_ms));
-
-        int64_t now = std::chrono::steady_clock::now()
-                          .time_since_epoch()
-                          .count();
-
-        if (role_ == Role::LEADER)
-            continue;
-
-        if (now - last_heartbeat_time_.load() > timeout_ms * 1'000'000)
-        {
-
-            startElection();
-        }
+        store_.put(op.key, op.value);
+        last_index_ = op.index;
     }
+
+    commit_index_.store(last_index_.load());
+    last_applied_.store(commit_index_.load());
 }
 
-void Node::startElection()
+bool Node::get(const std::string &key,
+               std::string &value)
 {
-
-    std::lock_guard<std::mutex> lock(election_mutex_);
-
-    role_ = Role::CANDIDATE;
-    current_term_++;
-    voted_for_ = 0;
-
-    ReplicationManager manager(peers_);
-
-    int votes = manager.requestVotes(
-        current_term_.load(),
-        0,
-        last_index_.load());
-
-    if (votes == -1)
-    {
-        role_ = Role::FOLLOWER;
-        return;
-    }
-
-    int majority = (peers_.size() + 1) / 2 + 1;
-
-    if (votes >= majority)
-    {
-        role_ = Role::LEADER;
-        std::cout << "Elected leader for term "
-                  << current_term_.load() << "\n";
-
-        sendHeartbeats();
-    }
-    else
-    {
-        role_ = Role::FOLLOWER;
-    }
-}
-
-void Node::sendHeartbeats()
-{
-
-    ReplicationManager manager(peers_);
-
-    kv::Operation empty_op;
-    manager.replicate(empty_op,
-                      commit_index_.load());
-}
-
-void Node::receiveHeartbeat(int64_t term)
-{
-
-    if (term >= current_term_)
-    {
-        role_ = Role::FOLLOWER;
-        current_term_ = term;
-        last_heartbeat_time_ =
-            std::chrono::steady_clock::now()
-                .time_since_epoch()
-                .count();
-    }
+    return store_.get(key, value);
 }
 
 void Node::updateTerm(int64_t term)
@@ -127,7 +59,6 @@ bool Node::requestVote(int64_t term,
                        int64_t candidate_id,
                        int64_t last_log_index)
 {
-
     std::lock_guard<std::mutex> lock(election_mutex_);
 
     if (term < current_term_)
@@ -143,42 +74,17 @@ bool Node::requestVote(int64_t term,
     return false;
 }
 
-bool Node::replicateAndCommit(const std::string &key,
-                              const std::string &value)
+void Node::receiveHeartbeat(int64_t term)
 {
-    if (role_ != Role::LEADER)
-        return false;
-
-    int64_t idx = ++last_index_;
-
-    Operation local_op{idx,
-                       current_term_.load(),
-                       key,
-                       value};
-
-    wal_.append(local_op);
-
-    kv::Operation proto_op;
-    proto_op.set_index(idx);
-    proto_op.set_term(current_term_.load());
-    proto_op.set_key(key);
-    proto_op.set_value(value);
-
-    ReplicationManager manager(peers_);
-
-    int success = manager.replicate(proto_op,
-                                    commit_index_.load());
-
-    int majority = (peers_.size() + 1) / 2 + 1;
-
-    if (success >= majority)
+    if (term >= current_term_)
     {
-        commit_index_.store(idx);
-        applyUpTo(commit_index_.load());
-        return true;
+        role_ = Role::FOLLOWER;
+        current_term_ = term;
+        last_heartbeat_time_ =
+            std::chrono::steady_clock::now()
+                .time_since_epoch()
+                .count();
     }
-
-    return false;
 }
 
 void Node::appendFromLeader(const Operation &op)
@@ -208,22 +114,168 @@ void Node::applyUpTo(int64_t commit_index)
     }
 }
 
-bool Node::get(const std::string &key,
-               std::string &value)
-{
-    return store_.get(key, value);
-}
+/* ============================
+   RAFT BACKTRACKING SECTION
+============================= */
 
-void Node::recover()
+bool Node::replicateAndCommit(const std::string &key,
+                              const std::string &value)
 {
-    auto ops = wal_.replay();
+    if (role_ != Role::LEADER)
+        return false;
 
-    for (const auto &op : ops)
+    int64_t idx = ++last_index_;
+
+    Operation local_op{idx,
+                       current_term_.load(),
+                       key,
+                       value};
+
+    wal_.append(local_op);
+
+    for (size_t i = 0; i < peers_.size(); ++i)
+        replicateToFollower(i);
+
+    updateCommitIndex();
+
+    if (commit_index_.load() >= idx)
     {
-        store_.put(op.key, op.value);
-        last_index_ = op.index;
+        applyUpTo(commit_index_.load());
+        return true;
     }
 
-    commit_index_.store(last_index_.load());
-    last_applied_.store(commit_index_.load());
+    return false;
+}
+
+bool Node::replicateToFollower(int followerIndex)
+{
+    ReplicationManager manager({peers_[followerIndex]});
+
+    const auto &log = wal_.inMemoryLog();
+
+    int64_t nextIdx = nextIndex_[followerIndex];
+
+    if (nextIdx > log.size())
+        return true;
+
+    kv::Operation proto_op;
+    proto_op.set_index(log[nextIdx - 1].index);
+    proto_op.set_term(log[nextIdx - 1].term);
+    proto_op.set_key(log[nextIdx - 1].key);
+    proto_op.set_value(log[nextIdx - 1].value);
+
+    int success = manager.replicate(proto_op,
+                                    commit_index_.load());
+
+    if (success > 0)
+    {
+        matchIndex_[followerIndex] = nextIdx;
+        nextIndex_[followerIndex] = nextIdx + 1;
+        return true;
+    }
+    else
+    {
+        if (nextIndex_[followerIndex] > 1)
+            nextIndex_[followerIndex]--;
+
+        return false;
+    }
+}
+
+void Node::updateCommitIndex()
+{
+    for (int64_t N = last_index_.load();
+         N > commit_index_.load();
+         --N)
+    {
+        int count = 1;
+
+        for (size_t i = 0; i < matchIndex_.size(); ++i)
+        {
+            if (matchIndex_[i] >= N)
+                count++;
+        }
+
+        if (count > peers_.size() / 2)
+        {
+            commit_index_.store(N);
+            break;
+        }
+    }
+}
+
+/* ============================
+   ELECTION LOOP
+============================= */
+
+void Node::electionLoop()
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> timeout_dist(150, 300);
+
+    while (running_)
+    {
+        int timeout_ms = timeout_dist(gen);
+
+        std::this_thread::sleep_for(
+            std::chrono::milliseconds(timeout_ms));
+
+        int64_t now =
+            std::chrono::steady_clock::now()
+                .time_since_epoch()
+                .count();
+
+        if (role_ == Role::LEADER)
+            continue;
+
+        if (now - last_heartbeat_time_.load() > timeout_ms * 1'000'000)
+        {
+            startElection();
+        }
+    }
+}
+
+void Node::startElection()
+{
+    std::lock_guard<std::mutex> lock(election_mutex_);
+
+    role_ = Role::CANDIDATE;
+    current_term_++;
+    voted_for_ = 0;
+
+    ReplicationManager manager(peers_);
+
+    int votes = manager.requestVotes(
+        current_term_.load(),
+        0,
+        last_index_.load());
+
+    if (votes == -1)
+    {
+        role_ = Role::FOLLOWER;
+        return;
+    }
+
+    int majority = (peers_.size() + 1) / 2 + 1;
+
+    if (votes >= majority)
+    {
+        role_ = Role::LEADER;
+        sendHeartbeats();
+    }
+    else
+    {
+        role_ = Role::FOLLOWER;
+    }
+}
+
+void Node::sendHeartbeats()
+{
+    ReplicationManager manager(peers_);
+
+    kv::Operation empty_op;
+
+    manager.replicate(empty_op,
+                      commit_index_.load());
 }

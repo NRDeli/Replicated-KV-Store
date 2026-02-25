@@ -7,6 +7,7 @@
 #include <mutex>
 #include <thread>
 #include <chrono>
+#include <unordered_map>
 
 enum class Role
 {
@@ -64,10 +65,17 @@ private:
     void startElection();
     void sendHeartbeats();
 
+    bool replicateToFollower(int followerIndex);
+
+    void updateCommitIndex();
+
     KVStore store_;
     WriteAheadLog wal_;
 
     std::vector<std::string> peers_;
+
+    std::vector<int64_t> nextIndex_;
+    std::vector<int64_t> matchIndex_;
 
     std::atomic<int64_t> last_index_;
     std::atomic<int64_t> commit_index_;

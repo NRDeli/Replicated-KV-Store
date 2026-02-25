@@ -1,5 +1,4 @@
 #include "replication_manager.h"
-#include <iostream>
 
 ReplicationManager::ReplicationManager(
     const std::vector<std::string> &peers)
@@ -22,11 +21,12 @@ int ReplicationManager::replicate(
     const kv::Operation &op,
     int64_t commit_index)
 {
-    int success_count = 1;
+    int success_count = 0;
 
     for (auto &stub : replication_stubs_)
     {
         kv::ReplicationPacket packet;
+
         packet.set_commit_index(commit_index);
 
         if (op.index() != 0)
@@ -41,10 +41,7 @@ int ReplicationManager::replicate(
         grpc::Status status =
             stub->Replicate(&context, packet, &ack);
 
-        if (!status.ok())
-            continue;
-
-        if (ack.success())
+        if (status.ok() && ack.success())
             success_count++;
     }
 
