@@ -27,6 +27,9 @@ public:
     Role role() const { return role_; }
     std::string leaderAddress() const { return leader_addr_; }
 
+    void appendFromLeader(const Operation &op);
+    bool replicateAndCommit(const std::string &key, const std::string &value);
+
 private:
     KVStore store_;
     WriteAheadLog wal_;

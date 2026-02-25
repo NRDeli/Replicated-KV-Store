@@ -1,4 +1,5 @@
 #include "node.h"
+#include "replication_manager.h"
 
 Node::Node(const std::string &wal_file,
            Role role,
@@ -11,23 +12,39 @@ Node::Node(const std::string &wal_file,
       last_index_(0),
       commit_index_(0) {}
 
-bool Node::put(const std::string &key, const std::string &value)
+bool Node::replicateAndCommit(const std::string &key,
+                              const std::string &value)
 {
+
     if (role_ != Role::LEADER)
-    {
         return false;
-    }
 
     int64_t idx = ++last_index_;
-    Operation op{idx, key, value};
 
-    wal_.append(op);
+    Operation local_op{idx, key, value};
+    wal_.append(local_op);
 
-    // Stage 2: apply immediately (no quorum yet)
-    store_.put(key, value);
-    commit_index_ = idx;
+    kv::Operation proto_op;
+    proto_op.set_index(idx);
+    proto_op.set_key(key);
+    proto_op.set_value(value);
 
-    return true;
+    ReplicationManager manager(peers_);
+
+    int success = manager.replicate(proto_op);
+
+    int majority = (peers_.size() + 1) / 2 + 1;
+
+    if (success >= majority)
+    {
+
+        store_.put(key, value);
+        commit_index_ = idx;
+
+        return true;
+    }
+
+    return false;
 }
 
 bool Node::get(const std::string &key, std::string &value)
@@ -46,4 +63,11 @@ void Node::recover()
     }
 
     commit_index_.store(last_index_.load());
+}
+
+void Node::appendFromLeader(const Operation &op)
+{
+    wal_.append(op);
+    store_.put(op.key, op.value);
+    last_index_ = op.index;
 }

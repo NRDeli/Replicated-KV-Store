@@ -12,13 +12,19 @@ void RunServer(const std::string &address,
     Node node("wal_" + address + ".log", role, leader, peers);
     node.recover();
 
-    KVServiceImpl service(&node);
+    KVServiceImpl kv_service(&node);
+    ReplicationServiceImpl replication_service(&node);
 
     grpc::ServerBuilder builder;
+
     builder.AddListeningPort(address, grpc::InsecureServerCredentials());
-    builder.RegisterService(&service);
+
+    // Register BOTH services
+    builder.RegisterService(&kv_service);
+    builder.RegisterService(&replication_service);
 
     std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
+
     std::cout << "Server running at " << address << "\n";
 
     server->Wait();

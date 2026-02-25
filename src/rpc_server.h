@@ -19,3 +19,16 @@ public:
 private:
     Node *node_;
 };
+
+class ReplicationServiceImpl final : public kv::ReplicationService::Service
+{
+public:
+    ReplicationServiceImpl(Node *node);
+
+    grpc::Status Replicate(grpc::ServerContext *context,
+                           const kv::ReplicationPacket *request,
+                           kv::ReplicationAck *response) override;
+
+private:
+    Node *node_;
+};
