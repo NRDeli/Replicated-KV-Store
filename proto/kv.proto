@@ -39,6 +39,7 @@ message Operation {
 message ReplicationPacket {
   int64 from_index = 1;
   repeated Operation ops = 2;
+  int64 commit_index = 3;   // NEW
 }
 
 message ReplicationAck {

@@ -200,7 +200,8 @@ inline constexpr ReplicationPacket::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : _cached_size_{0},
         ops_{},
-        from_index_{::int64_t{0}} {}
+        from_index_{::int64_t{0}},
+        commit_index_{::int64_t{0}} {}
 
 template <typename>
 PROTOBUF_CONSTEXPR ReplicationPacket::ReplicationPacket(::_pbi::ConstantInitialized)
@@ -266,11 +267,13 @@ const ::uint32_t
         1,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::kv::ReplicationPacket, _impl_._has_bits_),
-        5, // hasbit index offset
+        6, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::kv::ReplicationPacket, _impl_.from_index_),
         PROTOBUF_FIELD_OFFSET(::kv::ReplicationPacket, _impl_.ops_),
+        PROTOBUF_FIELD_OFFSET(::kv::ReplicationPacket, _impl_.commit_index_),
         1,
         0,
+        2,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::kv::ReplicationAck, _impl_._has_bits_),
         5, // hasbit index offset
@@ -288,7 +291,7 @@ static const ::_pbi::MigrationSchema
         {19, sizeof(::kv::GetResponse)},
         {26, sizeof(::kv::Operation)},
         {35, sizeof(::kv::ReplicationPacket)},
-        {42, sizeof(::kv::ReplicationAck)},
+        {44, sizeof(::kv::ReplicationAck)},
 };
 static const ::_pb::Message* PROTOBUF_NONNULL const file_default_instances[] = {
     &::kv::_PutRequest_default_instance_._instance,
@@ -307,20 +310,21 @@ const char descriptor_table_protodef_kv_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABL
     "quest\022\013\n\003key\030\001 \001(\t\"+\n\013GetResponse\022\r\n\005fou"
     "nd\030\001 \001(\010\022\r\n\005value\030\002 \001(\t\"6\n\tOperation\022\r\n\005"
     "index\030\001 \001(\003\022\013\n\003key\030\002 \001(\t\022\r\n\005value\030\003 \001(\t\""
-    "C\n\021ReplicationPacket\022\022\n\nfrom_index\030\001 \001(\003"
-    "\022\032\n\003ops\030\002 \003(\0132\r.kv.Operation\"5\n\016Replicat"
-    "ionAck\022\017\n\007success\030\001 \001(\010\022\022\n\nlast_index\030\002 "
-    "\001(\0032[\n\tKVService\022&\n\003Put\022\016.kv.PutRequest\032"
-    "\017.kv.PutResponse\022&\n\003Get\022\016.kv.GetRequest\032"
-    "\017.kv.GetResponse2L\n\022ReplicationService\0226"
-    "\n\tReplicate\022\025.kv.ReplicationPacket\032\022.kv."
-    "ReplicationAckb\006proto3"
+    "Y\n\021ReplicationPacket\022\022\n\nfrom_index\030\001 \001(\003"
+    "\022\032\n\003ops\030\002 \003(\0132\r.kv.Operation\022\024\n\014commit_i"
+    "ndex\030\003 \001(\003\"5\n\016ReplicationAck\022\017\n\007success\030"
+    "\001 \001(\010\022\022\n\nlast_index\030\002 \001(\0032[\n\tKVService\022&"
+    "\n\003Put\022\016.kv.PutRequest\032\017.kv.PutResponse\022&"
+    "\n\003Get\022\016.kv.GetRequest\032\017.kv.GetResponse2L"
+    "\n\022ReplicationService\0226\n\tReplicate\022\025.kv.R"
+    "eplicationPacket\032\022.kv.ReplicationAckb\006pr"
+    "oto3"
 };
 static ::absl::once_flag descriptor_table_kv_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_kv_2eproto = {
     false,
     false,
-    542,
+    564,
     descriptor_table_protodef_kv_2eproto,
     "kv.proto",
     &descriptor_table_kv_2eproto_once,
@@ -1937,7 +1941,13 @@ ReplicationPacket::ReplicationPacket(
   _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
-  _impl_.from_index_ = from._impl_.from_index_;
+  ::memcpy(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, from_index_),
+           reinterpret_cast<const char*>(&from._impl_) +
+               offsetof(Impl_, from_index_),
+           offsetof(Impl_, commit_index_) -
+               offsetof(Impl_, from_index_) +
+               sizeof(Impl_::commit_index_));
 
   // @@protoc_insertion_point(copy_constructor:kv.ReplicationPacket)
 }
@@ -1949,7 +1959,12 @@ PROTOBUF_NDEBUG_INLINE ReplicationPacket::Impl_::Impl_(
 
 inline void ReplicationPacket::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
-  _impl_.from_index_ = {};
+  ::memset(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, from_index_),
+           0,
+           offsetof(Impl_, commit_index_) -
+               offsetof(Impl_, from_index_) +
+               sizeof(Impl_::commit_index_));
 }
 ReplicationPacket::~ReplicationPacket() {
   // @@protoc_insertion_point(destructor:kv.ReplicationPacket)
@@ -2020,16 +2035,16 @@ ReplicationPacket::GetClassData() const {
   return ReplicationPacket_class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<1, 2, 1, 0, 2>
+const ::_pbi::TcParseTable<2, 3, 1, 0, 2>
 ReplicationPacket::_table_ = {
   {
     PROTOBUF_FIELD_OFFSET(ReplicationPacket, _impl_._has_bits_),
     0, // no _extensions_
-    2, 8,  // max_field_number, fast_idx_mask
+    3, 24,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967292,  // skipmap
+    4294967288,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    2,  // num_field_entries
+    3,  // num_field_entries
     1,  // num_aux_entries
     offsetof(decltype(_table_), aux_entries),
     ReplicationPacket_class_data_.base(),
@@ -2039,14 +2054,19 @@ ReplicationPacket::_table_ = {
     ::_pbi::TcParser::GetTable<::kv::ReplicationPacket>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
-    // repeated .kv.Operation ops = 2;
-    {::_pbi::TcParser::FastMtR1,
-     {18, 0, 0,
-      PROTOBUF_FIELD_OFFSET(ReplicationPacket, _impl_.ops_)}},
+    {::_pbi::TcParser::MiniParse, {}},
     // int64 from_index = 1;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(ReplicationPacket, _impl_.from_index_), 1>(),
      {8, 1, 0,
       PROTOBUF_FIELD_OFFSET(ReplicationPacket, _impl_.from_index_)}},
+    // repeated .kv.Operation ops = 2;
+    {::_pbi::TcParser::FastMtR1,
+     {18, 0, 0,
+      PROTOBUF_FIELD_OFFSET(ReplicationPacket, _impl_.ops_)}},
+    // int64 commit_index = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(ReplicationPacket, _impl_.commit_index_), 2>(),
+     {24, 2, 0,
+      PROTOBUF_FIELD_OFFSET(ReplicationPacket, _impl_.commit_index_)}},
   }}, {{
     65535, 65535
   }}, {{
@@ -2054,6 +2074,8 @@ ReplicationPacket::_table_ = {
     {PROTOBUF_FIELD_OFFSET(ReplicationPacket, _impl_.from_index_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
     // repeated .kv.Operation ops = 2;
     {PROTOBUF_FIELD_OFFSET(ReplicationPacket, _impl_.ops_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
+    // int64 commit_index = 3;
+    {PROTOBUF_FIELD_OFFSET(ReplicationPacket, _impl_.commit_index_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
   }},
   {{
       {::_pbi::TcParser::GetTable<::kv::Operation>()},
@@ -2072,7 +2094,11 @@ PROTOBUF_NOINLINE void ReplicationPacket::Clear() {
   if (CheckHasBitForRepeated(cached_has_bits, 0x00000001U)) {
     _impl_.ops_.Clear();
   }
-  _impl_.from_index_ = ::int64_t{0};
+  if (BatchCheckHasBit(cached_has_bits, 0x00000006U)) {
+    ::memset(&_impl_.from_index_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.commit_index_) -
+        reinterpret_cast<char*>(&_impl_.from_index_)) + sizeof(_impl_.commit_index_));
+  }
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -2118,6 +2144,15 @@ PROTOBUF_NOINLINE void ReplicationPacket::Clear() {
     }
   }
 
+  // int64 commit_index = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (this_._internal_commit_index() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<3>(
+              stream, this_._internal_commit_index(), target);
+    }
+  }
+
   if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
     target =
         ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
@@ -2143,7 +2178,7 @@ PROTOBUF_NOINLINE void ReplicationPacket::Clear() {
 
   ::_pbi::Prefetch5LinesFrom7Lines(&this_);
   cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
     // repeated .kv.Operation ops = 2;
     if (CheckHasBitForRepeated(cached_has_bits, 0x00000001U)) {
       total_size += 1UL * this_._internal_ops_size();
@@ -2156,6 +2191,13 @@ PROTOBUF_NOINLINE void ReplicationPacket::Clear() {
       if (this_._internal_from_index() != 0) {
         total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
             this_._internal_from_index());
+      }
+    }
+    // int64 commit_index = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (this_._internal_commit_index() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
+            this_._internal_commit_index());
       }
     }
   }
@@ -2178,7 +2220,7 @@ void ReplicationPacket::MergeImpl(::google::protobuf::MessageLite& to_msg,
   (void)cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
     if (CheckHasBitForRepeated(cached_has_bits, 0x00000001U)) {
       _this->_internal_mutable_ops()->InternalMergeFromWithArena(
           ::google::protobuf::MessageLite::internal_visibility(), arena,
@@ -2187,6 +2229,11 @@ void ReplicationPacket::MergeImpl(::google::protobuf::MessageLite& to_msg,
     if (CheckHasBit(cached_has_bits, 0x00000002U)) {
       if (from._internal_from_index() != 0) {
         _this->_impl_.from_index_ = from._impl_.from_index_;
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (from._internal_commit_index() != 0) {
+        _this->_impl_.commit_index_ = from._impl_.commit_index_;
       }
     }
   }
@@ -2208,7 +2255,12 @@ void ReplicationPacket::InternalSwap(ReplicationPacket* PROTOBUF_RESTRICT PROTOB
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   _impl_.ops_.InternalSwap(&other->_impl_.ops_);
-  swap(_impl_.from_index_, other->_impl_.from_index_);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(ReplicationPacket, _impl_.commit_index_)
+      + sizeof(ReplicationPacket::_impl_.commit_index_)
+      - PROTOBUF_FIELD_OFFSET(ReplicationPacket, _impl_.from_index_)>(
+          reinterpret_cast<char*>(&_impl_.from_index_),
+          reinterpret_cast<char*>(&other->_impl_.from_index_));
 }
 
 ::google::protobuf::Metadata ReplicationPacket::GetMetadata() const {

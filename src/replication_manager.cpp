@@ -2,23 +2,32 @@
 
 ReplicationManager::ReplicationManager(const std::vector<std::string> &peers)
 {
+
     for (const auto &peer : peers)
     {
-        auto channel = grpc::CreateChannel(peer, grpc::InsecureChannelCredentials());
-        stubs_.push_back(kv::ReplicationService::NewStub(channel));
+
+        auto channel = grpc::CreateChannel(peer,
+                                           grpc::InsecureChannelCredentials());
+
+        stubs_.push_back(
+            kv::ReplicationService::NewStub(channel));
     }
 }
 
-int ReplicationManager::replicate(const kv::Operation &op)
+int ReplicationManager::replicate(const kv::Operation &op,
+                                  int64_t commit_index)
 {
 
-    int success_count = 1; // leader counts as 1
+    int success_count = 1; // leader counts itself
 
     for (auto &stub : stubs_)
     {
 
         kv::ReplicationPacket packet;
+
         packet.set_from_index(op.index());
+        packet.set_commit_index(commit_index);
+
         *packet.add_ops() = op;
 
         kv::ReplicationAck ack;

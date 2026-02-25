@@ -19,16 +19,29 @@ public:
          const std::string &leader_addr,
          const std::vector<std::string> &peers);
 
-    bool put(const std::string &key, const std::string &value);
+    bool replicateAndCommit(const std::string &key,
+                            const std::string &value);
+
     bool get(const std::string &key, std::string &value);
 
     void recover();
 
+    void appendFromLeader(const Operation &op);
+
+    void applyUpTo(int64_t commit_index);
+
+    void setCommitIndex(int64_t idx)
+    {
+        commit_index_.store(idx);
+    }
+
+    int64_t lastIndex() const
+    {
+        return last_index_.load();
+    }
+
     Role role() const { return role_; }
     std::string leaderAddress() const { return leader_addr_; }
-
-    void appendFromLeader(const Operation &op);
-    bool replicateAndCommit(const std::string &key, const std::string &value);
 
 private:
     KVStore store_;
@@ -40,4 +53,5 @@ private:
 
     std::atomic<int64_t> last_index_;
     std::atomic<int64_t> commit_index_;
+    std::atomic<int64_t> last_applied_;
 };

@@ -1485,6 +1485,7 @@ class ReplicationPacket final : public ::google::protobuf::Message
   enum : int {
     kOpsFieldNumber = 2,
     kFromIndexFieldNumber = 1,
+    kCommitIndexFieldNumber = 3,
   };
   // repeated .kv.Operation ops = 2;
   int ops_size() const;
@@ -1513,11 +1514,21 @@ class ReplicationPacket final : public ::google::protobuf::Message
   void _internal_set_from_index(::int64_t value);
 
   public:
+  // int64 commit_index = 3;
+  void clear_commit_index() ;
+  ::int64_t commit_index() const;
+  void set_commit_index(::int64_t value);
+
+  private:
+  ::int64_t _internal_commit_index() const;
+  void _internal_set_commit_index(::int64_t value);
+
+  public:
   // @@protoc_insertion_point(class_scope:kv.ReplicationPacket)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
-  static const ::google::protobuf::internal::TcParseTable<1, 2,
+  static const ::google::protobuf::internal::TcParseTable<2, 3,
                                    1, 0,
                                    2>
       _table_;
@@ -1541,6 +1552,7 @@ class ReplicationPacket final : public ::google::protobuf::Message
     ::google::protobuf::internal::CachedSize _cached_size_;
     ::google::protobuf::RepeatedPtrField< ::kv::Operation > ops_;
     ::int64_t from_index_;
+    ::int64_t commit_index_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -2194,6 +2206,31 @@ inline ::google::protobuf::RepeatedPtrField<::kv::Operation>* PROTOBUF_NONNULL
 ReplicationPacket::_internal_mutable_ops() {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return &_impl_.ops_;
+}
+
+// int64 commit_index = 3;
+inline void ReplicationPacket::clear_commit_index() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.commit_index_ = ::int64_t{0};
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000004U);
+}
+inline ::int64_t ReplicationPacket::commit_index() const {
+  // @@protoc_insertion_point(field_get:kv.ReplicationPacket.commit_index)
+  return _internal_commit_index();
+}
+inline void ReplicationPacket::set_commit_index(::int64_t value) {
+  _internal_set_commit_index(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  // @@protoc_insertion_point(field_set:kv.ReplicationPacket.commit_index)
+}
+inline ::int64_t ReplicationPacket::_internal_commit_index() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.commit_index_;
+}
+inline void ReplicationPacket::_internal_set_commit_index(::int64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.commit_index_ = value;
 }
 
 // -------------------------------------------------------------------

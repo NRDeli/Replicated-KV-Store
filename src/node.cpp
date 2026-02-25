@@ -10,12 +10,12 @@ Node::Node(const std::string &wal_file,
       leader_addr_(leader_addr),
       peers_(peers),
       last_index_(0),
-      commit_index_(0) {}
+      commit_index_(0),
+      last_applied_(0) {}
 
 bool Node::replicateAndCommit(const std::string &key,
                               const std::string &value)
 {
-
     if (role_ != Role::LEADER)
         return false;
 
@@ -31,15 +31,22 @@ bool Node::replicateAndCommit(const std::string &key,
 
     ReplicationManager manager(peers_);
 
-    int success = manager.replicate(proto_op);
+    // Phase 1: replicate append
+    int success = manager.replicate(proto_op,
+                                    commit_index_.load());
 
     int majority = (peers_.size() + 1) / 2 + 1;
 
     if (success >= majority)
     {
+        commit_index_.store(idx);
 
-        store_.put(key, value);
-        commit_index_ = idx;
+        // Apply locally after commit
+        applyUpTo(commit_index_.load());
+
+        // Phase 2: propagate commit index
+        manager.replicate(proto_op,
+                          commit_index_.load());
 
         return true;
     }
@@ -47,7 +54,8 @@ bool Node::replicateAndCommit(const std::string &key,
     return false;
 }
 
-bool Node::get(const std::string &key, std::string &value)
+bool Node::get(const std::string &key,
+               std::string &value)
 {
     return store_.get(key, value);
 }
@@ -63,11 +71,31 @@ void Node::recover()
     }
 
     commit_index_.store(last_index_.load());
+    last_applied_.store(commit_index_.load());
 }
 
 void Node::appendFromLeader(const Operation &op)
 {
     wal_.append(op);
-    store_.put(op.key, op.value);
-    last_index_ = op.index;
+    last_index_.store(op.index);
+}
+
+void Node::applyUpTo(int64_t commit_index)
+{
+    while (last_applied_.load() < commit_index)
+    {
+        int64_t next = last_applied_.load() + 1;
+
+        auto ops = wal_.replay(); // simple but correct
+
+        for (const auto &op : ops)
+        {
+            if (op.index == next)
+            {
+                store_.put(op.key, op.value);
+                last_applied_.store(next);
+                break;
+            }
+        }
+    }
 }

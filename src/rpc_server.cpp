@@ -53,6 +53,12 @@ grpc::Status ReplicationServiceImpl::Replicate(
     for (const auto &op : request->ops())
     {
 
+        if (op.index() != node_->lastIndex() + 1)
+        {
+            response->set_success(false);
+            return grpc::Status::OK;
+        }
+
         Operation local_op;
         local_op.index = op.index();
         local_op.key = op.key();
@@ -61,8 +67,11 @@ grpc::Status ReplicationServiceImpl::Replicate(
         node_->appendFromLeader(local_op);
     }
 
+    node_->setCommitIndex(request->commit_index());
+    node_->applyUpTo(request->commit_index());
+
     response->set_success(true);
-    response->set_last_index(request->ops().rbegin()->index());
+    response->set_last_index(node_->lastIndex());
 
     return grpc::Status::OK;
 }
