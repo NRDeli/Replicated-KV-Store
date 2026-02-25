@@ -5,6 +5,8 @@
 #include <vector>
 #include <string>
 #include <mutex>
+#include <thread>
+#include <chrono>
 
 enum class Role
 {
@@ -17,9 +19,9 @@ class Node
 {
 public:
     Node(const std::string &wal_file,
-         Role role,
-         const std::string &leader_addr,
          const std::vector<std::string> &peers);
+
+    void start();
 
     bool replicateAndCommit(const std::string &key,
                             const std::string &value);
@@ -47,23 +49,24 @@ public:
         return current_term_.load();
     }
 
+    Role role() const { return role_; }
+
     void updateTerm(int64_t term);
 
     bool requestVote(int64_t term,
                      int64_t candidate_id,
                      int64_t last_log_index);
 
-    void startElection();
-
-    Role role() const { return role_; }
-    std::string leaderAddress() const { return leader_addr_; }
+    void receiveHeartbeat(int64_t term);
 
 private:
+    void electionLoop();
+    void startElection();
+    void sendHeartbeats();
+
     KVStore store_;
     WriteAheadLog wal_;
 
-    Role role_;
-    std::string leader_addr_;
     std::vector<std::string> peers_;
 
     std::atomic<int64_t> last_index_;
@@ -72,6 +75,11 @@ private:
 
     std::atomic<int64_t> current_term_;
     int64_t voted_for_;
+
+    std::atomic<Role> role_;
+
+    std::atomic<bool> running_;
+    std::atomic<int64_t> last_heartbeat_time_;
 
     std::mutex election_mutex_;
 };

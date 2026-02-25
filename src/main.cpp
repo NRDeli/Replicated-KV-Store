@@ -4,13 +4,13 @@
 #include <iostream>
 
 void RunServer(const std::string &address,
-               Role role,
-               const std::string &leader,
                const std::vector<std::string> &peers)
 {
+    Node node("wal_" + address + ".log",
+              peers);
 
-    Node node("wal_" + address + ".log", role, leader, peers);
     node.recover();
+    node.start();
 
     KVServiceImpl kv_service(&node);
     ReplicationServiceImpl replication_service(&node);
@@ -18,43 +18,40 @@ void RunServer(const std::string &address,
 
     grpc::ServerBuilder builder;
 
-    builder.AddListeningPort(address, grpc::InsecureServerCredentials());
+    builder.AddListeningPort(address,
+                             grpc::InsecureServerCredentials());
 
-    // Register BOTH services
     builder.RegisterService(&kv_service);
     builder.RegisterService(&replication_service);
     builder.RegisterService(&election_service);
 
-    std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
+    std::unique_ptr<grpc::Server> server(
+        builder.BuildAndStart());
 
-    std::cout << "Server running at " << address << "\n";
+    std::cout << "Server running at "
+              << address << "\n";
 
     server->Wait();
 }
 
 int main(int argc, char **argv)
 {
-
-    if (argc < 3)
+    if (argc < 2)
     {
-        std::cout << "Usage: ./server <port> <role>\n";
+        std::cout << "Usage: ./server <port>\n";
         return 1;
     }
 
     std::string port = argv[1];
-    std::string role_str = argv[2];
-
-    Role role = (role_str == "leader") ? Role::LEADER : Role::FOLLOWER;
 
     std::string address = "0.0.0.0:" + port;
-    std::string leader = "localhost:50051";
 
     std::vector<std::string> peers = {
         "localhost:50051",
         "localhost:50052",
         "localhost:50053"};
 
-    RunServer(address, role, leader, peers);
+    RunServer(address, peers);
 
     return 0;
 }
