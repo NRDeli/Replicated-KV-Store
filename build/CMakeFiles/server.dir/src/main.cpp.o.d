@@ -1199,4 +1199,7 @@ CMakeFiles/server.dir/src/main.cpp.o: \
   /opt/homebrew/include/grpcpp/ports_undef.inc \
   /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/node.h \
   /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/kv_store.h \
-  /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/wal.h
+  /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/wal.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/thread \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__thread/this_thread.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__thread/thread.h
