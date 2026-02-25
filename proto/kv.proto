@@ -11,6 +11,10 @@ service ReplicationService {
   rpc Replicate (ReplicationPacket) returns (ReplicationAck);
 }
 
+service ElectionService {
+  rpc RequestVote (VoteRequest) returns (VoteResponse);
+}
+
 message PutRequest {
   string key = 1;
   string value = 2;
@@ -32,17 +36,31 @@ message GetResponse {
 
 message Operation {
   int64 index = 1;
-  string key = 2;
-  string value = 3;
+  int64 term = 2;     // NEW
+  string key = 3;
+  string value = 4;
 }
 
 message ReplicationPacket {
   int64 from_index = 1;
   repeated Operation ops = 2;
-  int64 commit_index = 3;   // NEW
+  int64 commit_index = 3;
+  int64 term = 4;      // NEW
 }
 
 message ReplicationAck {
   bool success = 1;
   int64 last_index = 2;
+  int64 term = 3;      // NEW
+}
+
+message VoteRequest {
+  int64 term = 1;
+  int64 candidate_id = 2;
+  int64 last_log_index = 3;
+}
+
+message VoteResponse {
+  int64 term = 1;
+  bool vote_granted = 2;
 }

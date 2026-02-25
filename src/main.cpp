@@ -14,6 +14,7 @@ void RunServer(const std::string &address,
 
     KVServiceImpl kv_service(&node);
     ReplicationServiceImpl replication_service(&node);
+    ElectionServiceImpl election_service(&node);
 
     grpc::ServerBuilder builder;
 
@@ -22,6 +23,7 @@ void RunServer(const std::string &address,
     // Register BOTH services
     builder.RegisterService(&kv_service);
     builder.RegisterService(&replication_service);
+    builder.RegisterService(&election_service);
 
     std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
 

@@ -4,11 +4,13 @@
 #include <atomic>
 #include <vector>
 #include <string>
+#include <mutex>
 
 enum class Role
 {
-    LEADER,
-    FOLLOWER
+    FOLLOWER,
+    CANDIDATE,
+    LEADER
 };
 
 class Node
@@ -40,6 +42,19 @@ public:
         return last_index_.load();
     }
 
+    int64_t currentTerm() const
+    {
+        return current_term_.load();
+    }
+
+    void updateTerm(int64_t term);
+
+    bool requestVote(int64_t term,
+                     int64_t candidate_id,
+                     int64_t last_log_index);
+
+    void startElection();
+
     Role role() const { return role_; }
     std::string leaderAddress() const { return leader_addr_; }
 
@@ -54,4 +69,9 @@ private:
     std::atomic<int64_t> last_index_;
     std::atomic<int64_t> commit_index_;
     std::atomic<int64_t> last_applied_;
+
+    std::atomic<int64_t> current_term_;
+    int64_t voted_for_;
+
+    std::mutex election_mutex_;
 };

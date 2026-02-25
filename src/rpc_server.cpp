@@ -75,3 +75,25 @@ grpc::Status ReplicationServiceImpl::Replicate(
 
     return grpc::Status::OK;
 }
+
+ElectionServiceImpl::ElectionServiceImpl(Node *node)
+    : node_(node) {}
+
+grpc::Status ElectionServiceImpl::RequestVote(
+    grpc::ServerContext *,
+    const kv::VoteRequest *request,
+    kv::VoteResponse *response)
+{
+
+    node_->updateTerm(request->term());
+
+    bool granted = node_->requestVote(
+        request->term(),
+        request->candidate_id(),
+        request->last_log_index());
+
+    response->set_term(node_->currentTerm());
+    response->set_vote_granted(granted);
+
+    return grpc::Status::OK;
+}

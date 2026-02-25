@@ -81,6 +81,14 @@ class ReplicationPacket;
 struct ReplicationPacketDefaultTypeInternal;
 extern ReplicationPacketDefaultTypeInternal _ReplicationPacket_default_instance_;
 extern const ::google::protobuf::internal::ClassDataFull ReplicationPacket_class_data_;
+class VoteRequest;
+struct VoteRequestDefaultTypeInternal;
+extern VoteRequestDefaultTypeInternal _VoteRequest_default_instance_;
+extern const ::google::protobuf::internal::ClassDataFull VoteRequest_class_data_;
+class VoteResponse;
+struct VoteResponseDefaultTypeInternal;
+extern VoteResponseDefaultTypeInternal _VoteResponse_default_instance_;
+extern const ::google::protobuf::internal::ClassDataFull VoteResponse_class_data_;
 }  // namespace kv
 namespace google {
 namespace protobuf {
@@ -92,6 +100,422 @@ namespace kv {
 // ===================================================================
 
 
+// -------------------------------------------------------------------
+
+class VoteResponse final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:kv.VoteResponse) */ {
+ public:
+  inline VoteResponse() : VoteResponse(nullptr) {}
+  ~VoteResponse() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(VoteResponse* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(VoteResponse));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR VoteResponse(::google::protobuf::internal::ConstantInitialized);
+
+  inline VoteResponse(const VoteResponse& from) : VoteResponse(nullptr, from) {}
+  inline VoteResponse(VoteResponse&& from) noexcept
+      : VoteResponse(nullptr, ::std::move(from)) {}
+  inline VoteResponse& operator=(const VoteResponse& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline VoteResponse& operator=(VoteResponse&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const VoteResponse& default_instance() {
+    return *reinterpret_cast<const VoteResponse*>(
+        &_VoteResponse_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 8;
+  friend void swap(VoteResponse& a, VoteResponse& b) { a.Swap(&b); }
+  inline void Swap(VoteResponse* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(VoteResponse* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  VoteResponse* PROTOBUF_NONNULL New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<VoteResponse>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const VoteResponse& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const VoteResponse& from) { VoteResponse::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(VoteResponse* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "kv.VoteResponse"; }
+
+  explicit VoteResponse(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  VoteResponse(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const VoteResponse& from);
+  VoteResponse(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, VoteResponse&& from) noexcept
+      : VoteResponse(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_();
+
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kTermFieldNumber = 1,
+    kVoteGrantedFieldNumber = 2,
+  };
+  // int64 term = 1;
+  void clear_term() ;
+  ::int64_t term() const;
+  void set_term(::int64_t value);
+
+  private:
+  ::int64_t _internal_term() const;
+  void _internal_set_term(::int64_t value);
+
+  public:
+  // bool vote_granted = 2;
+  void clear_vote_granted() ;
+  bool vote_granted() const;
+  void set_vote_granted(bool value);
+
+  private:
+  bool _internal_vote_granted() const;
+  void _internal_set_vote_granted(bool value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:kv.VoteResponse)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<1, 2,
+                                   0, 0,
+                                   2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const VoteResponse& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::int64_t term_;
+    bool vote_granted_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_kv_2eproto;
+};
+
+extern const ::google::protobuf::internal::ClassDataFull VoteResponse_class_data_;
+// -------------------------------------------------------------------
+
+class VoteRequest final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:kv.VoteRequest) */ {
+ public:
+  inline VoteRequest() : VoteRequest(nullptr) {}
+  ~VoteRequest() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(VoteRequest* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(VoteRequest));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR VoteRequest(::google::protobuf::internal::ConstantInitialized);
+
+  inline VoteRequest(const VoteRequest& from) : VoteRequest(nullptr, from) {}
+  inline VoteRequest(VoteRequest&& from) noexcept
+      : VoteRequest(nullptr, ::std::move(from)) {}
+  inline VoteRequest& operator=(const VoteRequest& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline VoteRequest& operator=(VoteRequest&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const VoteRequest& default_instance() {
+    return *reinterpret_cast<const VoteRequest*>(
+        &_VoteRequest_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 7;
+  friend void swap(VoteRequest& a, VoteRequest& b) { a.Swap(&b); }
+  inline void Swap(VoteRequest* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(VoteRequest* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  VoteRequest* PROTOBUF_NONNULL New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<VoteRequest>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const VoteRequest& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const VoteRequest& from) { VoteRequest::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(VoteRequest* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "kv.VoteRequest"; }
+
+  explicit VoteRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  VoteRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const VoteRequest& from);
+  VoteRequest(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, VoteRequest&& from) noexcept
+      : VoteRequest(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_();
+
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kTermFieldNumber = 1,
+    kCandidateIdFieldNumber = 2,
+    kLastLogIndexFieldNumber = 3,
+  };
+  // int64 term = 1;
+  void clear_term() ;
+  ::int64_t term() const;
+  void set_term(::int64_t value);
+
+  private:
+  ::int64_t _internal_term() const;
+  void _internal_set_term(::int64_t value);
+
+  public:
+  // int64 candidate_id = 2;
+  void clear_candidate_id() ;
+  ::int64_t candidate_id() const;
+  void set_candidate_id(::int64_t value);
+
+  private:
+  ::int64_t _internal_candidate_id() const;
+  void _internal_set_candidate_id(::int64_t value);
+
+  public:
+  // int64 last_log_index = 3;
+  void clear_last_log_index() ;
+  ::int64_t last_log_index() const;
+  void set_last_log_index(::int64_t value);
+
+  private:
+  ::int64_t _internal_last_log_index() const;
+  void _internal_set_last_log_index(::int64_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:kv.VoteRequest)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<2, 3,
+                                   0, 0,
+                                   2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const VoteRequest& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::int64_t term_;
+    ::int64_t candidate_id_;
+    ::int64_t last_log_index_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_kv_2eproto;
+};
+
+extern const ::google::protobuf::internal::ClassDataFull VoteRequest_class_data_;
 // -------------------------------------------------------------------
 
 class ReplicationAck final : public ::google::protobuf::Message
@@ -237,6 +661,7 @@ class ReplicationAck final : public ::google::protobuf::Message
   // accessors -------------------------------------------------------
   enum : int {
     kLastIndexFieldNumber = 2,
+    kTermFieldNumber = 3,
     kSuccessFieldNumber = 1,
   };
   // int64 last_index = 2;
@@ -247,6 +672,16 @@ class ReplicationAck final : public ::google::protobuf::Message
   private:
   ::int64_t _internal_last_index() const;
   void _internal_set_last_index(::int64_t value);
+
+  public:
+  // int64 term = 3;
+  void clear_term() ;
+  ::int64_t term() const;
+  void set_term(::int64_t value);
+
+  private:
+  ::int64_t _internal_term() const;
+  void _internal_set_term(::int64_t value);
 
   public:
   // bool success = 1;
@@ -263,7 +698,7 @@ class ReplicationAck final : public ::google::protobuf::Message
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
-  static const ::google::protobuf::internal::TcParseTable<1, 2,
+  static const ::google::protobuf::internal::TcParseTable<2, 3,
                                    0, 0,
                                    2>
       _table_;
@@ -286,6 +721,7 @@ class ReplicationAck final : public ::google::protobuf::Message
     ::google::protobuf::internal::HasBits<1> _has_bits_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     ::int64_t last_index_;
+    ::int64_t term_;
     bool success_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -857,11 +1293,12 @@ class Operation final : public ::google::protobuf::Message
 
   // accessors -------------------------------------------------------
   enum : int {
-    kKeyFieldNumber = 2,
-    kValueFieldNumber = 3,
+    kKeyFieldNumber = 3,
+    kValueFieldNumber = 4,
     kIndexFieldNumber = 1,
+    kTermFieldNumber = 2,
   };
-  // string key = 2;
+  // string key = 3;
   void clear_key() ;
   const ::std::string& key() const;
   template <typename Arg_ = const ::std::string&, typename... Args_>
@@ -876,7 +1313,7 @@ class Operation final : public ::google::protobuf::Message
   ::std::string* PROTOBUF_NONNULL _internal_mutable_key();
 
   public:
-  // string value = 3;
+  // string value = 4;
   void clear_value() ;
   const ::std::string& value() const;
   template <typename Arg_ = const ::std::string&, typename... Args_>
@@ -901,11 +1338,21 @@ class Operation final : public ::google::protobuf::Message
   void _internal_set_index(::int64_t value);
 
   public:
+  // int64 term = 2;
+  void clear_term() ;
+  ::int64_t term() const;
+  void set_term(::int64_t value);
+
+  private:
+  ::int64_t _internal_term() const;
+  void _internal_set_term(::int64_t value);
+
+  public:
   // @@protoc_insertion_point(class_scope:kv.Operation)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
-  static const ::google::protobuf::internal::TcParseTable<2, 3,
+  static const ::google::protobuf::internal::TcParseTable<2, 4,
                                    0, 29,
                                    2>
       _table_;
@@ -930,6 +1377,7 @@ class Operation final : public ::google::protobuf::Message
     ::google::protobuf::internal::ArenaStringPtr key_;
     ::google::protobuf::internal::ArenaStringPtr value_;
     ::int64_t index_;
+    ::int64_t term_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -1486,6 +1934,7 @@ class ReplicationPacket final : public ::google::protobuf::Message
     kOpsFieldNumber = 2,
     kFromIndexFieldNumber = 1,
     kCommitIndexFieldNumber = 3,
+    kTermFieldNumber = 4,
   };
   // repeated .kv.Operation ops = 2;
   int ops_size() const;
@@ -1524,11 +1973,21 @@ class ReplicationPacket final : public ::google::protobuf::Message
   void _internal_set_commit_index(::int64_t value);
 
   public:
+  // int64 term = 4;
+  void clear_term() ;
+  ::int64_t term() const;
+  void set_term(::int64_t value);
+
+  private:
+  ::int64_t _internal_term() const;
+  void _internal_set_term(::int64_t value);
+
+  public:
   // @@protoc_insertion_point(class_scope:kv.ReplicationPacket)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
-  static const ::google::protobuf::internal::TcParseTable<2, 3,
+  static const ::google::protobuf::internal::TcParseTable<2, 4,
                                    1, 0,
                                    2>
       _table_;
@@ -1553,6 +2012,7 @@ class ReplicationPacket final : public ::google::protobuf::Message
     ::google::protobuf::RepeatedPtrField< ::kv::Operation > ops_;
     ::int64_t from_index_;
     ::int64_t commit_index_;
+    ::int64_t term_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -1993,7 +2453,32 @@ inline void Operation::_internal_set_index(::int64_t value) {
   _impl_.index_ = value;
 }
 
-// string key = 2;
+// int64 term = 2;
+inline void Operation::clear_term() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.term_ = ::int64_t{0};
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000008U);
+}
+inline ::int64_t Operation::term() const {
+  // @@protoc_insertion_point(field_get:kv.Operation.term)
+  return _internal_term();
+}
+inline void Operation::set_term(::int64_t value) {
+  _internal_set_term(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  // @@protoc_insertion_point(field_set:kv.Operation.term)
+}
+inline ::int64_t Operation::_internal_term() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.term_;
+}
+inline void Operation::_internal_set_term(::int64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.term_ = value;
+}
+
+// string key = 3;
 inline void Operation::clear_key() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.key_.ClearToEmpty();
@@ -2058,7 +2543,7 @@ inline void Operation::set_allocated_key(::std::string* PROTOBUF_NULLABLE value)
   // @@protoc_insertion_point(field_set_allocated:kv.Operation.key)
 }
 
-// string value = 3;
+// string value = 4;
 inline void Operation::clear_value() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.value_.ClearToEmpty();
@@ -2233,6 +2718,31 @@ inline void ReplicationPacket::_internal_set_commit_index(::int64_t value) {
   _impl_.commit_index_ = value;
 }
 
+// int64 term = 4;
+inline void ReplicationPacket::clear_term() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.term_ = ::int64_t{0};
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000008U);
+}
+inline ::int64_t ReplicationPacket::term() const {
+  // @@protoc_insertion_point(field_get:kv.ReplicationPacket.term)
+  return _internal_term();
+}
+inline void ReplicationPacket::set_term(::int64_t value) {
+  _internal_set_term(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  // @@protoc_insertion_point(field_set:kv.ReplicationPacket.term)
+}
+inline ::int64_t ReplicationPacket::_internal_term() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.term_;
+}
+inline void ReplicationPacket::_internal_set_term(::int64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.term_ = value;
+}
+
 // -------------------------------------------------------------------
 
 // ReplicationAck
@@ -2242,7 +2752,7 @@ inline void ReplicationAck::clear_success() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.success_ = false;
   ClearHasBit(_impl_._has_bits_[0],
-                  0x00000002U);
+                  0x00000004U);
 }
 inline bool ReplicationAck::success() const {
   // @@protoc_insertion_point(field_get:kv.ReplicationAck.success)
@@ -2250,7 +2760,7 @@ inline bool ReplicationAck::success() const {
 }
 inline void ReplicationAck::set_success(bool value) {
   _internal_set_success(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
   // @@protoc_insertion_point(field_set:kv.ReplicationAck.success)
 }
 inline bool ReplicationAck::_internal_success() const {
@@ -2285,6 +2795,164 @@ inline ::int64_t ReplicationAck::_internal_last_index() const {
 inline void ReplicationAck::_internal_set_last_index(::int64_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.last_index_ = value;
+}
+
+// int64 term = 3;
+inline void ReplicationAck::clear_term() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.term_ = ::int64_t{0};
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000002U);
+}
+inline ::int64_t ReplicationAck::term() const {
+  // @@protoc_insertion_point(field_get:kv.ReplicationAck.term)
+  return _internal_term();
+}
+inline void ReplicationAck::set_term(::int64_t value) {
+  _internal_set_term(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  // @@protoc_insertion_point(field_set:kv.ReplicationAck.term)
+}
+inline ::int64_t ReplicationAck::_internal_term() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.term_;
+}
+inline void ReplicationAck::_internal_set_term(::int64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.term_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// VoteRequest
+
+// int64 term = 1;
+inline void VoteRequest::clear_term() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.term_ = ::int64_t{0};
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000001U);
+}
+inline ::int64_t VoteRequest::term() const {
+  // @@protoc_insertion_point(field_get:kv.VoteRequest.term)
+  return _internal_term();
+}
+inline void VoteRequest::set_term(::int64_t value) {
+  _internal_set_term(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  // @@protoc_insertion_point(field_set:kv.VoteRequest.term)
+}
+inline ::int64_t VoteRequest::_internal_term() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.term_;
+}
+inline void VoteRequest::_internal_set_term(::int64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.term_ = value;
+}
+
+// int64 candidate_id = 2;
+inline void VoteRequest::clear_candidate_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.candidate_id_ = ::int64_t{0};
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000002U);
+}
+inline ::int64_t VoteRequest::candidate_id() const {
+  // @@protoc_insertion_point(field_get:kv.VoteRequest.candidate_id)
+  return _internal_candidate_id();
+}
+inline void VoteRequest::set_candidate_id(::int64_t value) {
+  _internal_set_candidate_id(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  // @@protoc_insertion_point(field_set:kv.VoteRequest.candidate_id)
+}
+inline ::int64_t VoteRequest::_internal_candidate_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.candidate_id_;
+}
+inline void VoteRequest::_internal_set_candidate_id(::int64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.candidate_id_ = value;
+}
+
+// int64 last_log_index = 3;
+inline void VoteRequest::clear_last_log_index() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.last_log_index_ = ::int64_t{0};
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000004U);
+}
+inline ::int64_t VoteRequest::last_log_index() const {
+  // @@protoc_insertion_point(field_get:kv.VoteRequest.last_log_index)
+  return _internal_last_log_index();
+}
+inline void VoteRequest::set_last_log_index(::int64_t value) {
+  _internal_set_last_log_index(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  // @@protoc_insertion_point(field_set:kv.VoteRequest.last_log_index)
+}
+inline ::int64_t VoteRequest::_internal_last_log_index() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.last_log_index_;
+}
+inline void VoteRequest::_internal_set_last_log_index(::int64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.last_log_index_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// VoteResponse
+
+// int64 term = 1;
+inline void VoteResponse::clear_term() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.term_ = ::int64_t{0};
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000001U);
+}
+inline ::int64_t VoteResponse::term() const {
+  // @@protoc_insertion_point(field_get:kv.VoteResponse.term)
+  return _internal_term();
+}
+inline void VoteResponse::set_term(::int64_t value) {
+  _internal_set_term(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  // @@protoc_insertion_point(field_set:kv.VoteResponse.term)
+}
+inline ::int64_t VoteResponse::_internal_term() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.term_;
+}
+inline void VoteResponse::_internal_set_term(::int64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.term_ = value;
+}
+
+// bool vote_granted = 2;
+inline void VoteResponse::clear_vote_granted() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.vote_granted_ = false;
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000002U);
+}
+inline bool VoteResponse::vote_granted() const {
+  // @@protoc_insertion_point(field_get:kv.VoteResponse.vote_granted)
+  return _internal_vote_granted();
+}
+inline void VoteResponse::set_vote_granted(bool value) {
+  _internal_set_vote_granted(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  // @@protoc_insertion_point(field_set:kv.VoteResponse.vote_granted)
+}
+inline bool VoteResponse::_internal_vote_granted() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.vote_granted_;
+}
+inline void VoteResponse::_internal_set_vote_granted(bool value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.vote_granted_ = value;
 }
 
 #ifdef __GNUC__

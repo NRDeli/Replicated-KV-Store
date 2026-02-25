@@ -186,6 +186,67 @@ ReplicationService::Service::~Service() {
 }
 
 
+static const char* ElectionService_method_names[] = {
+  "/kv.ElectionService/RequestVote",
+};
+
+std::unique_ptr< ElectionService::Stub> ElectionService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
+  (void)options;
+  std::unique_ptr< ElectionService::Stub> stub(new ElectionService::Stub(channel, options));
+  return stub;
+}
+
+ElectionService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
+  : channel_(channel), rpcmethod_RequestVote_(ElectionService_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  {}
+
+::grpc::Status ElectionService::Stub::RequestVote(::grpc::ClientContext* context, const ::kv::VoteRequest& request, ::kv::VoteResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::kv::VoteRequest, ::kv::VoteResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_RequestVote_, context, request, response);
+}
+
+void ElectionService::Stub::async::RequestVote(::grpc::ClientContext* context, const ::kv::VoteRequest* request, ::kv::VoteResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::kv::VoteRequest, ::kv::VoteResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_RequestVote_, context, request, response, std::move(f));
+}
+
+void ElectionService::Stub::async::RequestVote(::grpc::ClientContext* context, const ::kv::VoteRequest* request, ::kv::VoteResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_RequestVote_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::kv::VoteResponse>* ElectionService::Stub::PrepareAsyncRequestVoteRaw(::grpc::ClientContext* context, const ::kv::VoteRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::kv::VoteResponse, ::kv::VoteRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_RequestVote_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::kv::VoteResponse>* ElectionService::Stub::AsyncRequestVoteRaw(::grpc::ClientContext* context, const ::kv::VoteRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncRequestVoteRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+ElectionService::Service::Service() {
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      ElectionService_method_names[0],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< ElectionService::Service, ::kv::VoteRequest, ::kv::VoteResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](ElectionService::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::kv::VoteRequest* req,
+             ::kv::VoteResponse* resp) {
+               return service->RequestVote(ctx, req, resp);
+             }, this)));
+}
+
+ElectionService::Service::~Service() {
+}
+
+::grpc::Status ElectionService::Service::RequestVote(::grpc::ServerContext* context, const ::kv::VoteRequest* request, ::kv::VoteResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+
 }  // namespace kv
 #include <grpcpp/ports_undef.inc>
 

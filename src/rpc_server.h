@@ -32,3 +32,16 @@ public:
 private:
     Node *node_;
 };
+
+class ElectionServiceImpl final : public kv::ElectionService::Service
+{
+public:
+    ElectionServiceImpl(Node *node);
+
+    grpc::Status RequestVote(grpc::ServerContext *,
+                             const kv::VoteRequest *,
+                             kv::VoteResponse *) override;
+
+private:
+    Node *node_;
+};
