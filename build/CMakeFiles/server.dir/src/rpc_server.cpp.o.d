@@ -1,5 +1,6 @@
-CMakeFiles/server.dir/src/main.cpp.o: \
-  /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/main.cpp \
+CMakeFiles/server.dir/src/rpc_server.cpp.o: \
+  /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/rpc_server.cpp \
+  /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/rpc_server.h \
   /opt/homebrew/include/grpcpp/grpcpp.h \
   /opt/homebrew/include/grpc/grpc.h \
   /opt/homebrew/include/grpc/byte_buffer.h \
@@ -1074,7 +1075,6 @@ CMakeFiles/server.dir/src/main.cpp.o: \
   /opt/homebrew/include/grpcpp/security/authorization_policy_provider.h \
   /opt/homebrew/include/grpcpp/server_posix.h \
   /opt/homebrew/include/grpcpp/version_info.h \
-  /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/rpc_server.h \
   /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/kv.grpc.pb.h \
   /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/kv.pb.h \
   /opt/homebrew/include/google/protobuf/runtime_version.h \

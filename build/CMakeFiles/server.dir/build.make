@@ -128,12 +128,72 @@ CMakeFiles/server.dir/src/wal.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/server.dir/src/wal.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/wal.cpp -o CMakeFiles/server.dir/src/wal.cpp.s
 
+CMakeFiles/server.dir/src/rpc_server.cpp.o: CMakeFiles/server.dir/flags.make
+CMakeFiles/server.dir/src/rpc_server.cpp.o: /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/rpc_server.cpp
+CMakeFiles/server.dir/src/rpc_server.cpp.o: CMakeFiles/server.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/nirmit/Documents/Projects/ReplicatedKVStore/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/server.dir/src/rpc_server.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/server.dir/src/rpc_server.cpp.o -MF CMakeFiles/server.dir/src/rpc_server.cpp.o.d -o CMakeFiles/server.dir/src/rpc_server.cpp.o -c /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/rpc_server.cpp
+
+CMakeFiles/server.dir/src/rpc_server.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/server.dir/src/rpc_server.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/rpc_server.cpp > CMakeFiles/server.dir/src/rpc_server.cpp.i
+
+CMakeFiles/server.dir/src/rpc_server.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/server.dir/src/rpc_server.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/rpc_server.cpp -o CMakeFiles/server.dir/src/rpc_server.cpp.s
+
+CMakeFiles/server.dir/src/replication_manager.cpp.o: CMakeFiles/server.dir/flags.make
+CMakeFiles/server.dir/src/replication_manager.cpp.o: /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/replication_manager.cpp
+CMakeFiles/server.dir/src/replication_manager.cpp.o: CMakeFiles/server.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/nirmit/Documents/Projects/ReplicatedKVStore/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/server.dir/src/replication_manager.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/server.dir/src/replication_manager.cpp.o -MF CMakeFiles/server.dir/src/replication_manager.cpp.o.d -o CMakeFiles/server.dir/src/replication_manager.cpp.o -c /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/replication_manager.cpp
+
+CMakeFiles/server.dir/src/replication_manager.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/server.dir/src/replication_manager.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/replication_manager.cpp > CMakeFiles/server.dir/src/replication_manager.cpp.i
+
+CMakeFiles/server.dir/src/replication_manager.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/server.dir/src/replication_manager.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/replication_manager.cpp -o CMakeFiles/server.dir/src/replication_manager.cpp.s
+
+CMakeFiles/server.dir/src/kv.pb.cc.o: CMakeFiles/server.dir/flags.make
+CMakeFiles/server.dir/src/kv.pb.cc.o: /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/kv.pb.cc
+CMakeFiles/server.dir/src/kv.pb.cc.o: CMakeFiles/server.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/nirmit/Documents/Projects/ReplicatedKVStore/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/server.dir/src/kv.pb.cc.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/server.dir/src/kv.pb.cc.o -MF CMakeFiles/server.dir/src/kv.pb.cc.o.d -o CMakeFiles/server.dir/src/kv.pb.cc.o -c /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/kv.pb.cc
+
+CMakeFiles/server.dir/src/kv.pb.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/server.dir/src/kv.pb.cc.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/kv.pb.cc > CMakeFiles/server.dir/src/kv.pb.cc.i
+
+CMakeFiles/server.dir/src/kv.pb.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/server.dir/src/kv.pb.cc.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/kv.pb.cc -o CMakeFiles/server.dir/src/kv.pb.cc.s
+
+CMakeFiles/server.dir/src/kv.grpc.pb.cc.o: CMakeFiles/server.dir/flags.make
+CMakeFiles/server.dir/src/kv.grpc.pb.cc.o: /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/kv.grpc.pb.cc
+CMakeFiles/server.dir/src/kv.grpc.pb.cc.o: CMakeFiles/server.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/nirmit/Documents/Projects/ReplicatedKVStore/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/server.dir/src/kv.grpc.pb.cc.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/server.dir/src/kv.grpc.pb.cc.o -MF CMakeFiles/server.dir/src/kv.grpc.pb.cc.o.d -o CMakeFiles/server.dir/src/kv.grpc.pb.cc.o -c /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/kv.grpc.pb.cc
+
+CMakeFiles/server.dir/src/kv.grpc.pb.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/server.dir/src/kv.grpc.pb.cc.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/kv.grpc.pb.cc > CMakeFiles/server.dir/src/kv.grpc.pb.cc.i
+
+CMakeFiles/server.dir/src/kv.grpc.pb.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/server.dir/src/kv.grpc.pb.cc.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/nirmit/Documents/Projects/ReplicatedKVStore/src/kv.grpc.pb.cc -o CMakeFiles/server.dir/src/kv.grpc.pb.cc.s
+
 # Object files for target server
 server_OBJECTS = \
 "CMakeFiles/server.dir/src/main.cpp.o" \
 "CMakeFiles/server.dir/src/node.cpp.o" \
 "CMakeFiles/server.dir/src/kv_store.cpp.o" \
-"CMakeFiles/server.dir/src/wal.cpp.o"
+"CMakeFiles/server.dir/src/wal.cpp.o" \
+"CMakeFiles/server.dir/src/rpc_server.cpp.o" \
+"CMakeFiles/server.dir/src/replication_manager.cpp.o" \
+"CMakeFiles/server.dir/src/kv.pb.cc.o" \
+"CMakeFiles/server.dir/src/kv.grpc.pb.cc.o"
 
 # External object files for target server
 server_EXTERNAL_OBJECTS =
@@ -142,6 +202,10 @@ server: CMakeFiles/server.dir/src/main.cpp.o
 server: CMakeFiles/server.dir/src/node.cpp.o
 server: CMakeFiles/server.dir/src/kv_store.cpp.o
 server: CMakeFiles/server.dir/src/wal.cpp.o
+server: CMakeFiles/server.dir/src/rpc_server.cpp.o
+server: CMakeFiles/server.dir/src/replication_manager.cpp.o
+server: CMakeFiles/server.dir/src/kv.pb.cc.o
+server: CMakeFiles/server.dir/src/kv.grpc.pb.cc.o
 server: CMakeFiles/server.dir/build.make
 server: /opt/homebrew/lib/libgrpc++.1.78.1.dylib
 server: /opt/homebrew/lib/libgrpc.52.0.0.dylib
@@ -245,7 +309,7 @@ server: /opt/homebrew/lib/libabsl_throw_delegate.2601.0.0.dylib
 server: /opt/homebrew/lib/libabsl_raw_logging_internal.2601.0.0.dylib
 server: /opt/homebrew/lib/libabsl_log_severity.2601.0.0.dylib
 server: CMakeFiles/server.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/nirmit/Documents/Projects/ReplicatedKVStore/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable server"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/nirmit/Documents/Projects/ReplicatedKVStore/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Linking CXX executable server"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/server.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

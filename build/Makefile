@@ -129,6 +129,54 @@ server/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/build
 .PHONY : server/fast
 
+src/kv.grpc.pb.o: src/kv.grpc.pb.cc.o
+.PHONY : src/kv.grpc.pb.o
+
+# target to build an object file
+src/kv.grpc.pb.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/src/kv.grpc.pb.cc.o
+.PHONY : src/kv.grpc.pb.cc.o
+
+src/kv.grpc.pb.i: src/kv.grpc.pb.cc.i
+.PHONY : src/kv.grpc.pb.i
+
+# target to preprocess a source file
+src/kv.grpc.pb.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/src/kv.grpc.pb.cc.i
+.PHONY : src/kv.grpc.pb.cc.i
+
+src/kv.grpc.pb.s: src/kv.grpc.pb.cc.s
+.PHONY : src/kv.grpc.pb.s
+
+# target to generate assembly for a file
+src/kv.grpc.pb.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/src/kv.grpc.pb.cc.s
+.PHONY : src/kv.grpc.pb.cc.s
+
+src/kv.pb.o: src/kv.pb.cc.o
+.PHONY : src/kv.pb.o
+
+# target to build an object file
+src/kv.pb.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/src/kv.pb.cc.o
+.PHONY : src/kv.pb.cc.o
+
+src/kv.pb.i: src/kv.pb.cc.i
+.PHONY : src/kv.pb.i
+
+# target to preprocess a source file
+src/kv.pb.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/src/kv.pb.cc.i
+.PHONY : src/kv.pb.cc.i
+
+src/kv.pb.s: src/kv.pb.cc.s
+.PHONY : src/kv.pb.s
+
+# target to generate assembly for a file
+src/kv.pb.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/src/kv.pb.cc.s
+.PHONY : src/kv.pb.cc.s
+
 src/kv_store.o: src/kv_store.cpp.o
 .PHONY : src/kv_store.o
 
@@ -201,6 +249,54 @@ src/node.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/src/node.cpp.s
 .PHONY : src/node.cpp.s
 
+src/replication_manager.o: src/replication_manager.cpp.o
+.PHONY : src/replication_manager.o
+
+# target to build an object file
+src/replication_manager.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/src/replication_manager.cpp.o
+.PHONY : src/replication_manager.cpp.o
+
+src/replication_manager.i: src/replication_manager.cpp.i
+.PHONY : src/replication_manager.i
+
+# target to preprocess a source file
+src/replication_manager.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/src/replication_manager.cpp.i
+.PHONY : src/replication_manager.cpp.i
+
+src/replication_manager.s: src/replication_manager.cpp.s
+.PHONY : src/replication_manager.s
+
+# target to generate assembly for a file
+src/replication_manager.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/src/replication_manager.cpp.s
+.PHONY : src/replication_manager.cpp.s
+
+src/rpc_server.o: src/rpc_server.cpp.o
+.PHONY : src/rpc_server.o
+
+# target to build an object file
+src/rpc_server.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/src/rpc_server.cpp.o
+.PHONY : src/rpc_server.cpp.o
+
+src/rpc_server.i: src/rpc_server.cpp.i
+.PHONY : src/rpc_server.i
+
+# target to preprocess a source file
+src/rpc_server.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/src/rpc_server.cpp.i
+.PHONY : src/rpc_server.cpp.i
+
+src/rpc_server.s: src/rpc_server.cpp.s
+.PHONY : src/rpc_server.s
+
+# target to generate assembly for a file
+src/rpc_server.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/src/rpc_server.cpp.s
+.PHONY : src/rpc_server.cpp.s
+
 src/wal.o: src/wal.cpp.o
 .PHONY : src/wal.o
 
@@ -234,6 +330,12 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... server"
+	@echo "... src/kv.grpc.pb.o"
+	@echo "... src/kv.grpc.pb.i"
+	@echo "... src/kv.grpc.pb.s"
+	@echo "... src/kv.pb.o"
+	@echo "... src/kv.pb.i"
+	@echo "... src/kv.pb.s"
 	@echo "... src/kv_store.o"
 	@echo "... src/kv_store.i"
 	@echo "... src/kv_store.s"
@@ -243,6 +345,12 @@ help:
 	@echo "... src/node.o"
 	@echo "... src/node.i"
 	@echo "... src/node.s"
+	@echo "... src/replication_manager.o"
+	@echo "... src/replication_manager.i"
+	@echo "... src/replication_manager.s"
+	@echo "... src/rpc_server.o"
+	@echo "... src/rpc_server.i"
+	@echo "... src/rpc_server.s"
 	@echo "... src/wal.o"
 	@echo "... src/wal.i"
 	@echo "... src/wal.s"

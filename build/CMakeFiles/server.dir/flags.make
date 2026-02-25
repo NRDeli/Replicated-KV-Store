@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = -DPROTOBUF_USE_DLLS
 
-CXX_INCLUDES = -isystem /opt/homebrew/include -isystem /opt/homebrew/Cellar/openssl@3/3.6.1/include
+CXX_INCLUDES = -I/Users/nirmit/Documents/Projects/ReplicatedKVStore/build -isystem /opt/homebrew/include -isystem /opt/homebrew/Cellar/openssl@3/3.6.1/include
 
 CXX_FLAGSarm64 = -std=gnu++17 -arch arm64
 
