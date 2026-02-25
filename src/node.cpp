@@ -14,7 +14,9 @@ Node::Node(const std::string &wal_file,
       voted_for_(-1),
       role_(Role::FOLLOWER),
       running_(true),
-      last_heartbeat_time_(std::chrono::steady_clock::now().time_since_epoch().count())
+      last_heartbeat_time_(std::chrono::steady_clock::now().time_since_epoch().count()),
+      elections_total_(0),
+      replication_failures_total_(0)
 {
     nextIndex_.resize(peers.size(), 1);
     matchIndex_.resize(peers.size(), 0);
@@ -175,9 +177,9 @@ bool Node::replicateToFollower(int followerIndex)
     }
     else
     {
+        replication_failures_total_++;
         if (nextIndex_[followerIndex] > 1)
             nextIndex_[followerIndex]--;
-
         return false;
     }
 }
@@ -243,7 +245,7 @@ void Node::startElection()
     role_ = Role::CANDIDATE;
     current_term_++;
     voted_for_ = 0;
-
+    elections_total_++;
     ReplicationManager manager(peers_);
 
     int votes = manager.requestVotes(
@@ -278,4 +280,39 @@ void Node::sendHeartbeats()
 
     manager.replicate(empty_op,
                       commit_index_.load());
+}
+
+std::string Node::metrics()
+{
+    std::string output;
+
+    output += "raft_role ";
+    output += std::to_string(static_cast<int>(role_.load()));
+    output += "\n";
+
+    output += "raft_term ";
+    output += std::to_string(current_term_.load());
+    output += "\n";
+
+    output += "raft_commit_index ";
+    output += std::to_string(commit_index_.load());
+    output += "\n";
+
+    output += "raft_last_applied ";
+    output += std::to_string(last_applied_.load());
+    output += "\n";
+
+    output += "raft_log_size ";
+    output += std::to_string(wal_.inMemoryLog().size());
+    output += "\n";
+
+    output += "raft_elections_total ";
+    output += std::to_string(elections_total_.load());
+    output += "\n";
+
+    output += "raft_replication_failures_total ";
+    output += std::to_string(replication_failures_total_.load());
+    output += "\n";
+
+    return output;
 }

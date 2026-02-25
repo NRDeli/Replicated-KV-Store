@@ -60,6 +60,8 @@ public:
 
     void receiveHeartbeat(int64_t term);
 
+    std::string metrics();
+
 private:
     void electionLoop();
     void startElection();
@@ -90,4 +92,7 @@ private:
     std::atomic<int64_t> last_heartbeat_time_;
 
     std::mutex election_mutex_;
+
+    std::atomic<int64_t> elections_total_;
+    std::atomic<int64_t> replication_failures_total_;
 };
