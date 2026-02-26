@@ -1,6 +1,7 @@
 #pragma once
 #include "kv_store.h"
-#include "wal.h"
+#include "operation.h"
+#include "../rust_wal/src/wal_adapter.h"
 #include <atomic>
 #include <vector>
 #include <string>
@@ -72,7 +73,7 @@ private:
     void updateCommitIndex();
 
     KVStore store_;
-    WriteAheadLog wal_;
+    std::unique_ptr<WALAdapter> wal_;
 
     std::vector<std::string> peers_;
 

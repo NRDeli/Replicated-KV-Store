@@ -5,7 +5,7 @@
 
 Node::Node(const std::string &wal_file,
            const std::vector<std::string> &peers)
-    : wal_(wal_file),
+    : wal_(std::make_unique<WALAdapter>(wal_file)),
       peers_(peers),
       last_index_(0),
       commit_index_(0),
@@ -29,7 +29,7 @@ void Node::start()
 
 void Node::recover()
 {
-    auto ops = wal_.replay();
+    auto ops = wal_->replay();
 
     for (const auto &op : ops)
     {
@@ -94,13 +94,13 @@ void Node::appendFromLeader(const Operation &op)
     if (op.term < current_term_)
         return;
 
-    wal_.append(op);
+    wal_->append(op);
     last_index_.store(op.index);
 }
 
 void Node::applyUpTo(int64_t commit_index)
 {
-    const auto &log = wal_.inMemoryLog();
+    const auto &log = wal_->inMemoryLog();
 
     while (last_applied_.load() < commit_index)
     {
@@ -133,7 +133,7 @@ bool Node::replicateAndCommit(const std::string &key,
                        key,
                        value};
 
-    wal_.append(local_op);
+    wal_->append(local_op);
 
     for (size_t i = 0; i < peers_.size(); ++i)
         replicateToFollower(i);
@@ -153,7 +153,7 @@ bool Node::replicateToFollower(int followerIndex)
 {
     ReplicationManager manager({peers_[followerIndex]});
 
-    const auto &log = wal_.inMemoryLog();
+    const auto &log = wal_->inMemoryLog();
 
     int64_t nextIdx = nextIndex_[followerIndex];
 
@@ -303,7 +303,7 @@ std::string Node::metrics()
     output += "\n";
 
     output += "raft_log_size ";
-    output += std::to_string(wal_.inMemoryLog().size());
+    output += std::to_string(wal_->inMemoryLog().size());
     output += "\n";
 
     output += "raft_elections_total ";
