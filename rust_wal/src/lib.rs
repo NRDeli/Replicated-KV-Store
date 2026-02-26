@@ -15,8 +15,10 @@ pub struct WalEntry {
 }
 
 struct Wal {
+    dir: String,
     file: File,
     entries: Vec<Vec<u8>>,
+    snapshot_index: u64,
 }
 
 lazy_static::lazy_static! {
@@ -76,7 +78,12 @@ pub extern "C" fn wal_open(path: *const i8) -> i32 {
 
     let entries = decode_all(&file);
 
-    let wal = Wal { file, entries };
+    let wal = Wal {
+        dir: p.to_string(),
+        file,
+        entries,
+        snapshot_index: 0,
+    };
 
     *GLOBAL.lock().unwrap() = Some(wal);
     0
@@ -181,4 +188,63 @@ pub extern "C" fn wal_truncate_from(index: u64) -> i32 {
 
     wal.file.flush().unwrap();
     0
+}
+
+#[no_mangle]
+pub extern "C" fn wal_create_snapshot(
+    data_ptr: *const u8,
+    data_len: usize,
+    last_index: u64,
+) -> i32 {
+    let mut g = GLOBAL.lock().unwrap();
+    let wal = g.as_mut().unwrap();
+
+    let data = unsafe { std::slice::from_raw_parts(data_ptr, data_len) };
+
+    let path = format!("{}/snapshot.bin", wal.dir);
+
+    std::fs::write(&path, data).unwrap();
+
+    wal.snapshot_index = last_index;
+
+    // compact log below snapshot
+    if last_index > 0 && last_index <= wal.entries.len() as u64 {
+        wal.entries.drain(..last_index as usize);
+    }
+
+    wal.file.set_len(0).unwrap();
+    wal.file.seek(std::io::SeekFrom::Start(0)).unwrap();
+
+    for rec in &wal.entries {
+        wal.file.write_all(rec).unwrap();
+    }
+
+    wal.file.flush().unwrap();
+
+    0
+}
+
+#[no_mangle]
+pub extern "C" fn wal_load_snapshot(
+    out_ptr: *mut *const u8,
+    out_len: *mut usize,
+    out_index: *mut u64,
+) -> i32 {
+    let g = GLOBAL.lock().unwrap();
+    let wal = g.as_ref().unwrap();
+
+    let path = format!("{}/snapshot.bin", wal.dir);
+
+    if let Ok(data) = std::fs::read(&path) {
+        unsafe {
+            *out_ptr = data.as_ptr();
+            *out_len = data.len();
+            *out_index = wal.snapshot_index;
+        }
+
+        std::mem::forget(data);
+        return 0;
+    }
+
+    -1
 }

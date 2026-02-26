@@ -54,3 +54,30 @@ void WALAdapter::truncateFrom(uint64_t index)
     if (index < cache_.size())
         cache_.resize(index);
 }
+
+void WALAdapter::createSnapshot(const std::string &data, uint64_t lastIndex)
+{
+    wal_create_snapshot(
+        (const uint8_t *)data.data(),
+        data.size(),
+        lastIndex);
+
+    if (lastIndex <= cache_.size())
+        cache_.erase(cache_.begin(), cache_.begin() + lastIndex);
+}
+
+bool WALAdapter::loadSnapshot(std::string &data, uint64_t &index)
+{
+    const uint8_t *ptr;
+    size_t len;
+    uint64_t idx;
+
+    int rc = wal_load_snapshot(&ptr, &len, &idx);
+
+    if (rc != 0)
+        return false;
+
+    data.assign((char *)ptr, len);
+    index = idx;
+    return true;
+}

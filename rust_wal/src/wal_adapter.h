@@ -24,6 +24,8 @@ extern "C"
     int wal_read(uint64_t, WalEntry *);
     uint64_t wal_last_index();
     int wal_truncate_from(uint64_t);
+    int wal_create_snapshot(const uint8_t *, size_t, uint64_t);
+    int wal_load_snapshot(const uint8_t **, size_t *, uint64_t *);
 }
 
 class WALAdapter
@@ -38,6 +40,9 @@ public:
 
     uint64_t lastIndex() const;
     void truncateFrom(uint64_t index);
+
+    void createSnapshot(const std::string &data, uint64_t lastIndex);
+    bool loadSnapshot(std::string &data, uint64_t &index);
 
 private:
     std::string file_;

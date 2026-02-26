@@ -29,6 +29,17 @@ void Node::start()
 
 void Node::recover()
 {
+    std::string snap;
+    uint64_t snapIndex;
+
+    if (wal_->loadSnapshot(snap, snapIndex))
+    {
+        store_.deserialize(snap);
+        last_index_ = snapIndex;
+        commit_index_ = snapIndex;
+        last_applied_ = snapIndex;
+    }
+
     auto ops = wal_->replay();
 
     for (const auto &op : ops)
@@ -120,6 +131,12 @@ void Node::applyUpTo(int64_t commit_index)
         store_.put(op.key, op.value);
         last_applied_++;
     }
+}
+
+void Node::createSnapshot()
+{
+    std::string serialized = store_.serialize();
+    wal_->createSnapshot(serialized, commit_index_.load());
 }
 
 /* ============================

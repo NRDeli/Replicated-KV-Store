@@ -63,6 +63,8 @@ public:
 
     std::string metrics();
 
+    void createSnapshot();
+
 private:
     void electionLoop();
     void startElection();
