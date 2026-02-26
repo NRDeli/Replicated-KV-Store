@@ -1,0 +1,22 @@
+# Build directory
+build/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# Binaries
+server
+
+# Object files
+*.o
+*.a
+*.out
+
+# WAL logs
+wal_*.log
+
+# macOS
+.DS_Store
