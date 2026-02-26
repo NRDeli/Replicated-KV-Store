@@ -31,9 +31,9 @@ public:
         kv::ReplicationAck *response) override;
 
     grpc::Status InstallSnapshot(
-        grpc::ServerContext *context,
-        const kv::InstallSnapshotRequest *request,
-        kv::InstallSnapshotResponse *response) override;
+        grpc::ServerContext *,
+        grpc::ServerReader<kv::InstallSnapshotChunk> *,
+        kv::InstallSnapshotResponse *) override;
 
 private:
     Node *node_;

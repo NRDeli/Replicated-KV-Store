@@ -407,22 +407,21 @@ class ReplicationService final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::kv::ReplicationAck>> PrepareAsyncReplicate(::grpc::ClientContext* context, const ::kv::ReplicationPacket& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::kv::ReplicationAck>>(PrepareAsyncReplicateRaw(context, request, cq));
     }
-    // Snapshot transfer
-    virtual ::grpc::Status InstallSnapshot(::grpc::ClientContext* context, const ::kv::InstallSnapshotRequest& request, ::kv::InstallSnapshotResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::kv::InstallSnapshotResponse>> AsyncInstallSnapshot(::grpc::ClientContext* context, const ::kv::InstallSnapshotRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::kv::InstallSnapshotResponse>>(AsyncInstallSnapshotRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientWriterInterface< ::kv::InstallSnapshotChunk>> InstallSnapshot(::grpc::ClientContext* context, ::kv::InstallSnapshotResponse* response) {
+      return std::unique_ptr< ::grpc::ClientWriterInterface< ::kv::InstallSnapshotChunk>>(InstallSnapshotRaw(context, response));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::kv::InstallSnapshotResponse>> PrepareAsyncInstallSnapshot(::grpc::ClientContext* context, const ::kv::InstallSnapshotRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::kv::InstallSnapshotResponse>>(PrepareAsyncInstallSnapshotRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::kv::InstallSnapshotChunk>> AsyncInstallSnapshot(::grpc::ClientContext* context, ::kv::InstallSnapshotResponse* response, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::kv::InstallSnapshotChunk>>(AsyncInstallSnapshotRaw(context, response, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::kv::InstallSnapshotChunk>> PrepareAsyncInstallSnapshot(::grpc::ClientContext* context, ::kv::InstallSnapshotResponse* response, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::kv::InstallSnapshotChunk>>(PrepareAsyncInstallSnapshotRaw(context, response, cq));
     }
     class async_interface {
      public:
       virtual ~async_interface() {}
       virtual void Replicate(::grpc::ClientContext* context, const ::kv::ReplicationPacket* request, ::kv::ReplicationAck* response, std::function<void(::grpc::Status)>) = 0;
       virtual void Replicate(::grpc::ClientContext* context, const ::kv::ReplicationPacket* request, ::kv::ReplicationAck* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      // Snapshot transfer
-      virtual void InstallSnapshot(::grpc::ClientContext* context, const ::kv::InstallSnapshotRequest* request, ::kv::InstallSnapshotResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void InstallSnapshot(::grpc::ClientContext* context, const ::kv::InstallSnapshotRequest* request, ::kv::InstallSnapshotResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void InstallSnapshot(::grpc::ClientContext* context, ::kv::InstallSnapshotResponse* response, ::grpc::ClientWriteReactor< ::kv::InstallSnapshotChunk>* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
@@ -430,8 +429,9 @@ class ReplicationService final {
    private:
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::kv::ReplicationAck>* AsyncReplicateRaw(::grpc::ClientContext* context, const ::kv::ReplicationPacket& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::kv::ReplicationAck>* PrepareAsyncReplicateRaw(::grpc::ClientContext* context, const ::kv::ReplicationPacket& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::kv::InstallSnapshotResponse>* AsyncInstallSnapshotRaw(::grpc::ClientContext* context, const ::kv::InstallSnapshotRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::kv::InstallSnapshotResponse>* PrepareAsyncInstallSnapshotRaw(::grpc::ClientContext* context, const ::kv::InstallSnapshotRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientWriterInterface< ::kv::InstallSnapshotChunk>* InstallSnapshotRaw(::grpc::ClientContext* context, ::kv::InstallSnapshotResponse* response) = 0;
+    virtual ::grpc::ClientAsyncWriterInterface< ::kv::InstallSnapshotChunk>* AsyncInstallSnapshotRaw(::grpc::ClientContext* context, ::kv::InstallSnapshotResponse* response, ::grpc::CompletionQueue* cq, void* tag) = 0;
+    virtual ::grpc::ClientAsyncWriterInterface< ::kv::InstallSnapshotChunk>* PrepareAsyncInstallSnapshotRaw(::grpc::ClientContext* context, ::kv::InstallSnapshotResponse* response, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -443,20 +443,21 @@ class ReplicationService final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::kv::ReplicationAck>> PrepareAsyncReplicate(::grpc::ClientContext* context, const ::kv::ReplicationPacket& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::kv::ReplicationAck>>(PrepareAsyncReplicateRaw(context, request, cq));
     }
-    ::grpc::Status InstallSnapshot(::grpc::ClientContext* context, const ::kv::InstallSnapshotRequest& request, ::kv::InstallSnapshotResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::kv::InstallSnapshotResponse>> AsyncInstallSnapshot(::grpc::ClientContext* context, const ::kv::InstallSnapshotRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::kv::InstallSnapshotResponse>>(AsyncInstallSnapshotRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientWriter< ::kv::InstallSnapshotChunk>> InstallSnapshot(::grpc::ClientContext* context, ::kv::InstallSnapshotResponse* response) {
+      return std::unique_ptr< ::grpc::ClientWriter< ::kv::InstallSnapshotChunk>>(InstallSnapshotRaw(context, response));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::kv::InstallSnapshotResponse>> PrepareAsyncInstallSnapshot(::grpc::ClientContext* context, const ::kv::InstallSnapshotRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::kv::InstallSnapshotResponse>>(PrepareAsyncInstallSnapshotRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncWriter< ::kv::InstallSnapshotChunk>> AsyncInstallSnapshot(::grpc::ClientContext* context, ::kv::InstallSnapshotResponse* response, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncWriter< ::kv::InstallSnapshotChunk>>(AsyncInstallSnapshotRaw(context, response, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncWriter< ::kv::InstallSnapshotChunk>> PrepareAsyncInstallSnapshot(::grpc::ClientContext* context, ::kv::InstallSnapshotResponse* response, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncWriter< ::kv::InstallSnapshotChunk>>(PrepareAsyncInstallSnapshotRaw(context, response, cq));
     }
     class async final :
       public StubInterface::async_interface {
      public:
       void Replicate(::grpc::ClientContext* context, const ::kv::ReplicationPacket* request, ::kv::ReplicationAck* response, std::function<void(::grpc::Status)>) override;
       void Replicate(::grpc::ClientContext* context, const ::kv::ReplicationPacket* request, ::kv::ReplicationAck* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void InstallSnapshot(::grpc::ClientContext* context, const ::kv::InstallSnapshotRequest* request, ::kv::InstallSnapshotResponse* response, std::function<void(::grpc::Status)>) override;
-      void InstallSnapshot(::grpc::ClientContext* context, const ::kv::InstallSnapshotRequest* request, ::kv::InstallSnapshotResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void InstallSnapshot(::grpc::ClientContext* context, ::kv::InstallSnapshotResponse* response, ::grpc::ClientWriteReactor< ::kv::InstallSnapshotChunk>* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -470,8 +471,9 @@ class ReplicationService final {
     class async async_stub_{this};
     ::grpc::ClientAsyncResponseReader< ::kv::ReplicationAck>* AsyncReplicateRaw(::grpc::ClientContext* context, const ::kv::ReplicationPacket& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::kv::ReplicationAck>* PrepareAsyncReplicateRaw(::grpc::ClientContext* context, const ::kv::ReplicationPacket& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::kv::InstallSnapshotResponse>* AsyncInstallSnapshotRaw(::grpc::ClientContext* context, const ::kv::InstallSnapshotRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::kv::InstallSnapshotResponse>* PrepareAsyncInstallSnapshotRaw(::grpc::ClientContext* context, const ::kv::InstallSnapshotRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientWriter< ::kv::InstallSnapshotChunk>* InstallSnapshotRaw(::grpc::ClientContext* context, ::kv::InstallSnapshotResponse* response) override;
+    ::grpc::ClientAsyncWriter< ::kv::InstallSnapshotChunk>* AsyncInstallSnapshotRaw(::grpc::ClientContext* context, ::kv::InstallSnapshotResponse* response, ::grpc::CompletionQueue* cq, void* tag) override;
+    ::grpc::ClientAsyncWriter< ::kv::InstallSnapshotChunk>* PrepareAsyncInstallSnapshotRaw(::grpc::ClientContext* context, ::kv::InstallSnapshotResponse* response, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_Replicate_;
     const ::grpc::internal::RpcMethod rpcmethod_InstallSnapshot_;
   };
@@ -482,8 +484,7 @@ class ReplicationService final {
     Service();
     virtual ~Service();
     virtual ::grpc::Status Replicate(::grpc::ServerContext* context, const ::kv::ReplicationPacket* request, ::kv::ReplicationAck* response);
-    // Snapshot transfer
-    virtual ::grpc::Status InstallSnapshot(::grpc::ServerContext* context, const ::kv::InstallSnapshotRequest* request, ::kv::InstallSnapshotResponse* response);
+    virtual ::grpc::Status InstallSnapshot(::grpc::ServerContext* context, ::grpc::ServerReader< ::kv::InstallSnapshotChunk>* reader, ::kv::InstallSnapshotResponse* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_Replicate : public BaseClass {
@@ -517,12 +518,12 @@ class ReplicationService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status InstallSnapshot(::grpc::ServerContext* /*context*/, const ::kv::InstallSnapshotRequest* /*request*/, ::kv::InstallSnapshotResponse* /*response*/) override {
+    ::grpc::Status InstallSnapshot(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::kv::InstallSnapshotChunk>* /*reader*/, ::kv::InstallSnapshotResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestInstallSnapshot(::grpc::ServerContext* context, ::kv::InstallSnapshotRequest* request, ::grpc::ServerAsyncResponseWriter< ::kv::InstallSnapshotResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+    void RequestInstallSnapshot(::grpc::ServerContext* context, ::grpc::ServerAsyncReader< ::kv::InstallSnapshotResponse, ::kv::InstallSnapshotChunk>* reader, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncClientStreaming(1, context, reader, new_call_cq, notification_cq, tag);
     }
   };
   typedef WithAsyncMethod_Replicate<WithAsyncMethod_InstallSnapshot<Service > > AsyncService;
@@ -560,25 +561,20 @@ class ReplicationService final {
    public:
     WithCallbackMethod_InstallSnapshot() {
       ::grpc::Service::MarkMethodCallback(1,
-          new ::grpc::internal::CallbackUnaryHandler< ::kv::InstallSnapshotRequest, ::kv::InstallSnapshotResponse>(
+          new ::grpc::internal::CallbackClientStreamingHandler< ::kv::InstallSnapshotChunk, ::kv::InstallSnapshotResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::kv::InstallSnapshotRequest* request, ::kv::InstallSnapshotResponse* response) { return this->InstallSnapshot(context, request, response); }));}
-    void SetMessageAllocatorFor_InstallSnapshot(
-        ::grpc::MessageAllocator< ::kv::InstallSnapshotRequest, ::kv::InstallSnapshotResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(1);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::kv::InstallSnapshotRequest, ::kv::InstallSnapshotResponse>*>(handler)
-              ->SetMessageAllocator(allocator);
+                   ::grpc::CallbackServerContext* context, ::kv::InstallSnapshotResponse* response) { return this->InstallSnapshot(context, response); }));
     }
     ~WithCallbackMethod_InstallSnapshot() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status InstallSnapshot(::grpc::ServerContext* /*context*/, const ::kv::InstallSnapshotRequest* /*request*/, ::kv::InstallSnapshotResponse* /*response*/) override {
+    ::grpc::Status InstallSnapshot(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::kv::InstallSnapshotChunk>* /*reader*/, ::kv::InstallSnapshotResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* InstallSnapshot(
-      ::grpc::CallbackServerContext* /*context*/, const ::kv::InstallSnapshotRequest* /*request*/, ::kv::InstallSnapshotResponse* /*response*/)  { return nullptr; }
+    virtual ::grpc::ServerReadReactor< ::kv::InstallSnapshotChunk>* InstallSnapshot(
+      ::grpc::CallbackServerContext* /*context*/, ::kv::InstallSnapshotResponse* /*response*/)  { return nullptr; }
   };
   typedef WithCallbackMethod_Replicate<WithCallbackMethod_InstallSnapshot<Service > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
@@ -611,7 +607,7 @@ class ReplicationService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status InstallSnapshot(::grpc::ServerContext* /*context*/, const ::kv::InstallSnapshotRequest* /*request*/, ::kv::InstallSnapshotResponse* /*response*/) override {
+    ::grpc::Status InstallSnapshot(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::kv::InstallSnapshotChunk>* /*reader*/, ::kv::InstallSnapshotResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -648,12 +644,12 @@ class ReplicationService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status InstallSnapshot(::grpc::ServerContext* /*context*/, const ::kv::InstallSnapshotRequest* /*request*/, ::kv::InstallSnapshotResponse* /*response*/) override {
+    ::grpc::Status InstallSnapshot(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::kv::InstallSnapshotChunk>* /*reader*/, ::kv::InstallSnapshotResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestInstallSnapshot(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+    void RequestInstallSnapshot(::grpc::ServerContext* context, ::grpc::ServerAsyncReader< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* reader, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncClientStreaming(1, context, reader, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -685,20 +681,20 @@ class ReplicationService final {
    public:
     WithRawCallbackMethod_InstallSnapshot() {
       ::grpc::Service::MarkMethodRawCallback(1,
-          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+          new ::grpc::internal::CallbackClientStreamingHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->InstallSnapshot(context, request, response); }));
+                   ::grpc::CallbackServerContext* context, ::grpc::ByteBuffer* response) { return this->InstallSnapshot(context, response); }));
     }
     ~WithRawCallbackMethod_InstallSnapshot() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status InstallSnapshot(::grpc::ServerContext* /*context*/, const ::kv::InstallSnapshotRequest* /*request*/, ::kv::InstallSnapshotResponse* /*response*/) override {
+    ::grpc::Status InstallSnapshot(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::kv::InstallSnapshotChunk>* /*reader*/, ::kv::InstallSnapshotResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* InstallSnapshot(
-      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+    virtual ::grpc::ServerReadReactor< ::grpc::ByteBuffer>* InstallSnapshot(
+      ::grpc::CallbackServerContext* /*context*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_Replicate : public BaseClass {
@@ -727,36 +723,9 @@ class ReplicationService final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedReplicate(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::kv::ReplicationPacket,::kv::ReplicationAck>* server_unary_streamer) = 0;
   };
-  template <class BaseClass>
-  class WithStreamedUnaryMethod_InstallSnapshot : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithStreamedUnaryMethod_InstallSnapshot() {
-      ::grpc::Service::MarkMethodStreamed(1,
-        new ::grpc::internal::StreamedUnaryHandler<
-          ::kv::InstallSnapshotRequest, ::kv::InstallSnapshotResponse>(
-            [this](::grpc::ServerContext* context,
-                   ::grpc::ServerUnaryStreamer<
-                     ::kv::InstallSnapshotRequest, ::kv::InstallSnapshotResponse>* streamer) {
-                       return this->StreamedInstallSnapshot(context,
-                         streamer);
-                  }));
-    }
-    ~WithStreamedUnaryMethod_InstallSnapshot() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable regular version of this method
-    ::grpc::Status InstallSnapshot(::grpc::ServerContext* /*context*/, const ::kv::InstallSnapshotRequest* /*request*/, ::kv::InstallSnapshotResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedInstallSnapshot(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::kv::InstallSnapshotRequest,::kv::InstallSnapshotResponse>* server_unary_streamer) = 0;
-  };
-  typedef WithStreamedUnaryMethod_Replicate<WithStreamedUnaryMethod_InstallSnapshot<Service > > StreamedUnaryService;
+  typedef WithStreamedUnaryMethod_Replicate<Service > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_Replicate<WithStreamedUnaryMethod_InstallSnapshot<Service > > StreamedService;
+  typedef WithStreamedUnaryMethod_Replicate<Service > StreamedService;
 };
 
 class ElectionService final {

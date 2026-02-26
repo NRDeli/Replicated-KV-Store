@@ -61,10 +61,10 @@ class GetResponse;
 struct GetResponseDefaultTypeInternal;
 extern GetResponseDefaultTypeInternal _GetResponse_default_instance_;
 extern const ::google::protobuf::internal::ClassDataFull GetResponse_class_data_;
-class InstallSnapshotRequest;
-struct InstallSnapshotRequestDefaultTypeInternal;
-extern InstallSnapshotRequestDefaultTypeInternal _InstallSnapshotRequest_default_instance_;
-extern const ::google::protobuf::internal::ClassDataFull InstallSnapshotRequest_class_data_;
+class InstallSnapshotChunk;
+struct InstallSnapshotChunkDefaultTypeInternal;
+extern InstallSnapshotChunkDefaultTypeInternal _InstallSnapshotChunk_default_instance_;
+extern const ::google::protobuf::internal::ClassDataFull InstallSnapshotChunk_class_data_;
 class InstallSnapshotResponse;
 struct InstallSnapshotResponseDefaultTypeInternal;
 extern InstallSnapshotResponseDefaultTypeInternal _InstallSnapshotResponse_default_instance_;
@@ -1585,30 +1585,30 @@ class InstallSnapshotResponse final : public ::google::protobuf::Message
 extern const ::google::protobuf::internal::ClassDataFull InstallSnapshotResponse_class_data_;
 // -------------------------------------------------------------------
 
-class InstallSnapshotRequest final : public ::google::protobuf::Message
-/* @@protoc_insertion_point(class_definition:kv.InstallSnapshotRequest) */ {
+class InstallSnapshotChunk final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:kv.InstallSnapshotChunk) */ {
  public:
-  inline InstallSnapshotRequest() : InstallSnapshotRequest(nullptr) {}
-  ~InstallSnapshotRequest() PROTOBUF_FINAL;
+  inline InstallSnapshotChunk() : InstallSnapshotChunk(nullptr) {}
+  ~InstallSnapshotChunk() PROTOBUF_FINAL;
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-  void operator delete(InstallSnapshotRequest* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+  void operator delete(InstallSnapshotChunk* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
     SharedDtor(*msg);
-    ::google::protobuf::internal::SizedDelete(msg, sizeof(InstallSnapshotRequest));
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(InstallSnapshotChunk));
   }
 #endif
 
   template <typename = void>
-  explicit PROTOBUF_CONSTEXPR InstallSnapshotRequest(::google::protobuf::internal::ConstantInitialized);
+  explicit PROTOBUF_CONSTEXPR InstallSnapshotChunk(::google::protobuf::internal::ConstantInitialized);
 
-  inline InstallSnapshotRequest(const InstallSnapshotRequest& from) : InstallSnapshotRequest(nullptr, from) {}
-  inline InstallSnapshotRequest(InstallSnapshotRequest&& from) noexcept
-      : InstallSnapshotRequest(nullptr, ::std::move(from)) {}
-  inline InstallSnapshotRequest& operator=(const InstallSnapshotRequest& from) {
+  inline InstallSnapshotChunk(const InstallSnapshotChunk& from) : InstallSnapshotChunk(nullptr, from) {}
+  inline InstallSnapshotChunk(InstallSnapshotChunk&& from) noexcept
+      : InstallSnapshotChunk(nullptr, ::std::move(from)) {}
+  inline InstallSnapshotChunk& operator=(const InstallSnapshotChunk& from) {
     CopyFrom(from);
     return *this;
   }
-  inline InstallSnapshotRequest& operator=(InstallSnapshotRequest&& from) noexcept {
+  inline InstallSnapshotChunk& operator=(InstallSnapshotChunk&& from) noexcept {
     if (this == &from) return *this;
     if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
       InternalSwap(&from);
@@ -1636,13 +1636,13 @@ class InstallSnapshotRequest final : public ::google::protobuf::Message
   static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  static const InstallSnapshotRequest& default_instance() {
-    return *reinterpret_cast<const InstallSnapshotRequest*>(
-        &_InstallSnapshotRequest_default_instance_);
+  static const InstallSnapshotChunk& default_instance() {
+    return *reinterpret_cast<const InstallSnapshotChunk*>(
+        &_InstallSnapshotChunk_default_instance_);
   }
   static constexpr int kIndexInFileMessages = 9;
-  friend void swap(InstallSnapshotRequest& a, InstallSnapshotRequest& b) { a.Swap(&b); }
-  inline void Swap(InstallSnapshotRequest* PROTOBUF_NONNULL other) {
+  friend void swap(InstallSnapshotChunk& a, InstallSnapshotChunk& b) { a.Swap(&b); }
+  inline void Swap(InstallSnapshotChunk* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -1650,7 +1650,7 @@ class InstallSnapshotRequest final : public ::google::protobuf::Message
       ::google::protobuf::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(InstallSnapshotRequest* PROTOBUF_NONNULL other) {
+  void UnsafeArenaSwap(InstallSnapshotChunk* PROTOBUF_NONNULL other) {
     if (other == this) return;
     ABSL_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
@@ -1658,13 +1658,13 @@ class InstallSnapshotRequest final : public ::google::protobuf::Message
 
   // implements Message ----------------------------------------------
 
-  InstallSnapshotRequest* PROTOBUF_NONNULL New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
-    return ::google::protobuf::Message::DefaultConstruct<InstallSnapshotRequest>(arena);
+  InstallSnapshotChunk* PROTOBUF_NONNULL New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<InstallSnapshotChunk>(arena);
   }
   using ::google::protobuf::Message::CopyFrom;
-  void CopyFrom(const InstallSnapshotRequest& from);
+  void CopyFrom(const InstallSnapshotChunk& from);
   using ::google::protobuf::Message::MergeFrom;
-  void MergeFrom(const InstallSnapshotRequest& from) { InstallSnapshotRequest::MergeImpl(*this, from); }
+  void MergeFrom(const InstallSnapshotChunk& from) { InstallSnapshotChunk::MergeImpl(*this, from); }
 
   private:
   static void MergeImpl(::google::protobuf::MessageLite& to_msg,
@@ -1700,17 +1700,17 @@ class InstallSnapshotRequest final : public ::google::protobuf::Message
   private:
   void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
   static void SharedDtor(MessageLite& self);
-  void InternalSwap(InstallSnapshotRequest* PROTOBUF_NONNULL other);
+  void InternalSwap(InstallSnapshotChunk* PROTOBUF_NONNULL other);
  private:
   template <typename T>
   friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
-  static ::absl::string_view FullMessageName() { return "kv.InstallSnapshotRequest"; }
+  static ::absl::string_view FullMessageName() { return "kv.InstallSnapshotChunk"; }
 
-  explicit InstallSnapshotRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
-  InstallSnapshotRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const InstallSnapshotRequest& from);
-  InstallSnapshotRequest(
-      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, InstallSnapshotRequest&& from) noexcept
-      : InstallSnapshotRequest(arena) {
+  explicit InstallSnapshotChunk(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  InstallSnapshotChunk(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const InstallSnapshotChunk& from);
+  InstallSnapshotChunk(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, InstallSnapshotChunk&& from) noexcept
+      : InstallSnapshotChunk(arena) {
     *this = ::std::move(from);
   }
   const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
@@ -1730,6 +1730,7 @@ class InstallSnapshotRequest final : public ::google::protobuf::Message
     kDataFieldNumber = 1,
     kLastIndexFieldNumber = 2,
     kLastTermFieldNumber = 3,
+    kDoneFieldNumber = 4,
   };
   // bytes data = 1;
   void clear_data() ;
@@ -1766,11 +1767,21 @@ class InstallSnapshotRequest final : public ::google::protobuf::Message
   void _internal_set_last_term(::uint64_t value);
 
   public:
-  // @@protoc_insertion_point(class_scope:kv.InstallSnapshotRequest)
+  // bool done = 4;
+  void clear_done() ;
+  bool done() const;
+  void set_done(bool value);
+
+  private:
+  bool _internal_done() const;
+  void _internal_set_done(bool value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:kv.InstallSnapshotChunk)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
-  static const ::google::protobuf::internal::TcParseTable<2, 3,
+  static const ::google::protobuf::internal::TcParseTable<2, 4,
                                    0, 0,
                                    2>
       _table_;
@@ -1789,19 +1800,20 @@ class InstallSnapshotRequest final : public ::google::protobuf::Message
     inline explicit Impl_(
         ::google::protobuf::internal::InternalVisibility visibility,
         ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
-        const InstallSnapshotRequest& from_msg);
+        const InstallSnapshotChunk& from_msg);
     ::google::protobuf::internal::HasBits<1> _has_bits_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     ::google::protobuf::internal::ArenaStringPtr data_;
     ::uint64_t last_index_;
     ::uint64_t last_term_;
+    bool done_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_kv_2eproto;
 };
 
-extern const ::google::protobuf::internal::ClassDataFull InstallSnapshotRequest_class_data_;
+extern const ::google::protobuf::internal::ClassDataFull InstallSnapshotChunk_class_data_;
 // -------------------------------------------------------------------
 
 class GetResponse final : public ::google::protobuf::Message
@@ -3374,49 +3386,49 @@ inline void VoteResponse::_internal_set_vote_granted(bool value) {
 
 // -------------------------------------------------------------------
 
-// InstallSnapshotRequest
+// InstallSnapshotChunk
 
 // bytes data = 1;
-inline void InstallSnapshotRequest::clear_data() {
+inline void InstallSnapshotChunk::clear_data() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.data_.ClearToEmpty();
   ClearHasBit(_impl_._has_bits_[0],
                   0x00000001U);
 }
-inline const ::std::string& InstallSnapshotRequest::data() const
+inline const ::std::string& InstallSnapshotChunk::data() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:kv.InstallSnapshotRequest.data)
+  // @@protoc_insertion_point(field_get:kv.InstallSnapshotChunk.data)
   return _internal_data();
 }
 template <typename Arg_, typename... Args_>
-PROTOBUF_ALWAYS_INLINE void InstallSnapshotRequest::set_data(Arg_&& arg, Args_... args) {
+PROTOBUF_ALWAYS_INLINE void InstallSnapshotChunk::set_data(Arg_&& arg, Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   SetHasBit(_impl_._has_bits_[0], 0x00000001U);
   _impl_.data_.SetBytes(static_cast<Arg_&&>(arg), args..., GetArena());
-  // @@protoc_insertion_point(field_set:kv.InstallSnapshotRequest.data)
+  // @@protoc_insertion_point(field_set:kv.InstallSnapshotChunk.data)
 }
-inline ::std::string* PROTOBUF_NONNULL InstallSnapshotRequest::mutable_data()
+inline ::std::string* PROTOBUF_NONNULL InstallSnapshotChunk::mutable_data()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
   SetHasBit(_impl_._has_bits_[0], 0x00000001U);
   ::std::string* _s = _internal_mutable_data();
-  // @@protoc_insertion_point(field_mutable:kv.InstallSnapshotRequest.data)
+  // @@protoc_insertion_point(field_mutable:kv.InstallSnapshotChunk.data)
   return _s;
 }
-inline const ::std::string& InstallSnapshotRequest::_internal_data() const {
+inline const ::std::string& InstallSnapshotChunk::_internal_data() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.data_.Get();
 }
-inline void InstallSnapshotRequest::_internal_set_data(const ::std::string& value) {
+inline void InstallSnapshotChunk::_internal_set_data(const ::std::string& value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.data_.Set(value, GetArena());
 }
-inline ::std::string* PROTOBUF_NONNULL InstallSnapshotRequest::_internal_mutable_data() {
+inline ::std::string* PROTOBUF_NONNULL InstallSnapshotChunk::_internal_mutable_data() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   return _impl_.data_.Mutable( GetArena());
 }
-inline ::std::string* PROTOBUF_NULLABLE InstallSnapshotRequest::release_data() {
+inline ::std::string* PROTOBUF_NULLABLE InstallSnapshotChunk::release_data() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:kv.InstallSnapshotRequest.data)
+  // @@protoc_insertion_point(field_release:kv.InstallSnapshotChunk.data)
   if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
     return nullptr;
   }
@@ -3427,7 +3439,7 @@ inline ::std::string* PROTOBUF_NULLABLE InstallSnapshotRequest::release_data() {
   }
   return released;
 }
-inline void InstallSnapshotRequest::set_allocated_data(::std::string* PROTOBUF_NULLABLE value) {
+inline void InstallSnapshotChunk::set_allocated_data(::std::string* PROTOBUF_NULLABLE value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   if (value != nullptr) {
     SetHasBit(_impl_._has_bits_[0], 0x00000001U);
@@ -3438,57 +3450,82 @@ inline void InstallSnapshotRequest::set_allocated_data(::std::string* PROTOBUF_N
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.data_.IsDefault()) {
     _impl_.data_.Set("", GetArena());
   }
-  // @@protoc_insertion_point(field_set_allocated:kv.InstallSnapshotRequest.data)
+  // @@protoc_insertion_point(field_set_allocated:kv.InstallSnapshotChunk.data)
 }
 
 // uint64 last_index = 2;
-inline void InstallSnapshotRequest::clear_last_index() {
+inline void InstallSnapshotChunk::clear_last_index() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.last_index_ = ::uint64_t{0u};
   ClearHasBit(_impl_._has_bits_[0],
                   0x00000002U);
 }
-inline ::uint64_t InstallSnapshotRequest::last_index() const {
-  // @@protoc_insertion_point(field_get:kv.InstallSnapshotRequest.last_index)
+inline ::uint64_t InstallSnapshotChunk::last_index() const {
+  // @@protoc_insertion_point(field_get:kv.InstallSnapshotChunk.last_index)
   return _internal_last_index();
 }
-inline void InstallSnapshotRequest::set_last_index(::uint64_t value) {
+inline void InstallSnapshotChunk::set_last_index(::uint64_t value) {
   _internal_set_last_index(value);
   SetHasBit(_impl_._has_bits_[0], 0x00000002U);
-  // @@protoc_insertion_point(field_set:kv.InstallSnapshotRequest.last_index)
+  // @@protoc_insertion_point(field_set:kv.InstallSnapshotChunk.last_index)
 }
-inline ::uint64_t InstallSnapshotRequest::_internal_last_index() const {
+inline ::uint64_t InstallSnapshotChunk::_internal_last_index() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.last_index_;
 }
-inline void InstallSnapshotRequest::_internal_set_last_index(::uint64_t value) {
+inline void InstallSnapshotChunk::_internal_set_last_index(::uint64_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.last_index_ = value;
 }
 
 // uint64 last_term = 3;
-inline void InstallSnapshotRequest::clear_last_term() {
+inline void InstallSnapshotChunk::clear_last_term() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.last_term_ = ::uint64_t{0u};
   ClearHasBit(_impl_._has_bits_[0],
                   0x00000004U);
 }
-inline ::uint64_t InstallSnapshotRequest::last_term() const {
-  // @@protoc_insertion_point(field_get:kv.InstallSnapshotRequest.last_term)
+inline ::uint64_t InstallSnapshotChunk::last_term() const {
+  // @@protoc_insertion_point(field_get:kv.InstallSnapshotChunk.last_term)
   return _internal_last_term();
 }
-inline void InstallSnapshotRequest::set_last_term(::uint64_t value) {
+inline void InstallSnapshotChunk::set_last_term(::uint64_t value) {
   _internal_set_last_term(value);
   SetHasBit(_impl_._has_bits_[0], 0x00000004U);
-  // @@protoc_insertion_point(field_set:kv.InstallSnapshotRequest.last_term)
+  // @@protoc_insertion_point(field_set:kv.InstallSnapshotChunk.last_term)
 }
-inline ::uint64_t InstallSnapshotRequest::_internal_last_term() const {
+inline ::uint64_t InstallSnapshotChunk::_internal_last_term() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.last_term_;
 }
-inline void InstallSnapshotRequest::_internal_set_last_term(::uint64_t value) {
+inline void InstallSnapshotChunk::_internal_set_last_term(::uint64_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.last_term_ = value;
+}
+
+// bool done = 4;
+inline void InstallSnapshotChunk::clear_done() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.done_ = false;
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000008U);
+}
+inline bool InstallSnapshotChunk::done() const {
+  // @@protoc_insertion_point(field_get:kv.InstallSnapshotChunk.done)
+  return _internal_done();
+}
+inline void InstallSnapshotChunk::set_done(bool value) {
+  _internal_set_done(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  // @@protoc_insertion_point(field_set:kv.InstallSnapshotChunk.done)
+}
+inline bool InstallSnapshotChunk::_internal_done() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.done_;
+}
+inline void InstallSnapshotChunk::_internal_set_done(bool value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.done_ = value;
 }
 
 // -------------------------------------------------------------------

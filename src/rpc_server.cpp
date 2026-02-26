@@ -110,21 +110,30 @@ grpc::Status ReplicationServiceImpl::Replicate(
 
 grpc::Status ReplicationServiceImpl::InstallSnapshot(
     grpc::ServerContext *,
-    const kv::InstallSnapshotRequest *request,
+    grpc::ServerReader<kv::InstallSnapshotChunk> *reader,
     kv::InstallSnapshotResponse *response)
 {
-    if (request->last_term() < node_->currentTerm())
+    std::string data;
+    uint64_t lastIndex = 0;
+    uint64_t lastTerm = 0;
+
+    kv::InstallSnapshotChunk chunk;
+
+    while (reader->Read(&chunk))
     {
-        response->set_success(false);
-        return grpc::Status::OK;
+        if (chunk.done())
+        {
+            lastIndex = chunk.last_index();
+            lastTerm = chunk.last_term();
+            break;
+        }
+
+        data.append(chunk.data());
+        lastIndex = chunk.last_index();
+        lastTerm = chunk.last_term();
     }
 
-    node_->updateTerm(request->last_term());
-
-    node_->installSnapshot(
-        request->data(),
-        request->last_index(),
-        request->last_term());
+    node_->installSnapshot(data, lastIndex, lastTerm);
 
     response->set_success(true);
     return grpc::Status::OK;

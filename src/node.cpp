@@ -208,7 +208,7 @@ bool Node::replicateToFollower(int followerIndex)
         if (nextIdx <= snapIndex)
         {
             ReplicationManager mgr({peers_[followerIndex]});
-            bool ok = mgr.sendSnapshot(
+            bool ok = mgr.sendSnapshotStream(
                 peers_[followerIndex],
                 snapData,
                 snapIndex,

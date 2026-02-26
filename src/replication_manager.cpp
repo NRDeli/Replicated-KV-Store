@@ -90,25 +90,101 @@ bool ReplicationManager::sendSnapshot(
     uint64_t lastIndex,
     uint64_t lastTerm)
 {
-    auto channel = grpc::CreateChannel(
-        peer, grpc::InsecureChannelCredentials());
+    auto channel =
+        grpc::CreateChannel(peer,
+                            grpc::InsecureChannelCredentials());
+
+    auto stub =
+        kv::ReplicationService::NewStub(channel);
+
+    grpc::ClientContext ctx;
+    kv::InstallSnapshotResponse resp;
+
+    auto writer =
+        stub->InstallSnapshot(&ctx, &resp);
+
+    const size_t CHUNK = 64 * 1024;
+    size_t offset = 0;
+
+    while (offset < data.size())
+    {
+        kv::InstallSnapshotChunk chunk;
+
+        size_t n =
+            std::min(CHUNK, data.size() - offset);
+
+        chunk.set_data(data.data() + offset, n);
+        chunk.set_last_index(lastIndex);
+        chunk.set_last_term(lastTerm);
+        chunk.set_done(false);
+
+        writer->Write(chunk);
+        offset += n;
+    }
+
+    kv::InstallSnapshotChunk finalChunk;
+    finalChunk.set_done(true);
+    finalChunk.set_last_index(lastIndex);
+    finalChunk.set_last_term(lastTerm);
+
+    writer->Write(finalChunk);
+    writer->WritesDone();
+
+    grpc::Status status = writer->Finish();
+
+    return status.ok() && resp.success();
+}
+
+bool ReplicationManager::sendSnapshotStream(
+    const std::string &peer,
+    const std::string &data,
+    uint64_t lastIndex,
+    uint64_t lastTerm)
+{
+    auto channel =
+        grpc::CreateChannel(peer,
+                            grpc::InsecureChannelCredentials());
 
     std::unique_ptr<kv::ReplicationService::Stub> stub =
         kv::ReplicationService::NewStub(channel);
 
-    kv::InstallSnapshotRequest req;
+    grpc::ClientContext ctx;
     kv::InstallSnapshotResponse resp;
 
-    req.set_data(data);
-    req.set_last_index(lastIndex);
-    req.set_last_term(lastTerm);
+    auto writer =
+        stub->InstallSnapshot(&ctx, &resp);
 
-    grpc::ClientContext ctx;
+    const size_t CHUNK = 64 * 1024;
+    size_t offset = 0;
 
-    auto status = stub->InstallSnapshot(&ctx, req, &resp);
+    while (offset < data.size())
+    {
+        kv::InstallSnapshotChunk chunk;
 
-    if (!status.ok())
-        return false;
+        size_t len =
+            std::min(CHUNK,
+                     data.size() - offset);
 
-    return resp.success();
+        chunk.set_data(data.data() + offset, len);
+        chunk.set_last_index(lastIndex);
+        chunk.set_last_term(lastTerm);
+        chunk.set_done(false);
+
+        writer->Write(chunk);
+
+        offset += len;
+    }
+
+    kv::InstallSnapshotChunk finalChunk;
+    finalChunk.set_done(true);
+    finalChunk.set_last_index(lastIndex);
+    finalChunk.set_last_term(lastTerm);
+
+    writer->Write(finalChunk);
+
+    writer->WritesDone();
+
+    grpc::Status status = writer->Finish();
+
+    return status.ok() && resp.success();
 }
