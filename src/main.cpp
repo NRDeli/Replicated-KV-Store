@@ -79,7 +79,7 @@ void StartMetricsServer(Node *node, int port)
 void RunServer(const std::string &address,
                const std::vector<std::string> &peers)
 {
-    Node node("wal_" + address + ".log",
+    Node node("wal_" + address,
               peers);
 
     node.recover();
