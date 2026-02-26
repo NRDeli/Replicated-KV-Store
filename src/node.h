@@ -65,6 +65,8 @@ public:
 
     void createSnapshot();
 
+    void installSnapshot(const std::string &data, uint64_t lastIndex, uint64_t lastTerm);
+
 private:
     void electionLoop();
     void startElection();

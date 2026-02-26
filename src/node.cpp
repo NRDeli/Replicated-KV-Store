@@ -139,6 +139,23 @@ void Node::createSnapshot()
     wal_->createSnapshot(serialized, commit_index_.load());
 }
 
+void Node::installSnapshot(const std::string &data,
+                           uint64_t lastIndex,
+                           uint64_t lastTerm)
+{
+    // Replace KV state
+    store_.deserialize(data);
+
+    // Replace WAL below snapshot
+    wal_->createSnapshot(data, lastIndex);
+
+    last_index_ = lastIndex;
+    commit_index_ = lastIndex;
+    last_applied_ = lastIndex;
+
+    current_term_ = lastTerm;
+}
+
 /* ============================
    RAFT BACKTRACKING SECTION
 ============================= */
@@ -166,6 +183,10 @@ bool Node::replicateAndCommit(const std::string &key,
     if (commit_index_.load() >= idx)
     {
         applyUpTo(commit_index_.load());
+        if (wal_->inMemoryLog().size() > 1000)
+        {
+            createSnapshot();
+        }
         return true;
     }
 
@@ -177,11 +198,30 @@ bool Node::replicateToFollower(int followerIndex)
     ReplicationManager manager({peers_[followerIndex]});
 
     const auto &log = wal_->inMemoryLog();
-
     int64_t nextIdx = nextIndex_[followerIndex];
+    // follower behind snapshot?
+    uint64_t snapIndex;
+    std::string snapData;
 
-    if (nextIdx > log.size())
-        return true;
+    if (wal_->loadSnapshot(snapData, snapIndex))
+    {
+        if (nextIdx <= snapIndex)
+        {
+            ReplicationManager mgr({peers_[followerIndex]});
+            bool ok = mgr.sendSnapshot(
+                peers_[followerIndex],
+                snapData,
+                snapIndex,
+                current_term_.load());
+            if (ok)
+            {
+                nextIndex_[followerIndex] = snapIndex + 1;
+                matchIndex_[followerIndex] = snapIndex;
+                return true;
+            }
+            return false;
+        }
+    }
 
     kv::Operation proto_op;
     proto_op.set_index(log[nextIdx - 1].index);

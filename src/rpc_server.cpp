@@ -16,7 +16,7 @@ grpc::Status KVServiceImpl::Put(
     if (node_->role() != Role::LEADER)
     {
         response->set_success(false);
-        response->set_leader_target("UNKNOWN"); // No fixed leader anymore
+        response->set_leader_target("UNKNOWN");
         return grpc::Status::OK;
     }
 
@@ -66,7 +66,7 @@ grpc::Status ReplicationServiceImpl::Replicate(
         return grpc::Status::OK;
     }
 
-    // If leader term is outdated
+    // Outdated leader
     if (request->term() < node_->currentTerm())
     {
         response->set_success(false);
@@ -101,6 +101,32 @@ grpc::Status ReplicationServiceImpl::Replicate(
     response->set_last_index(node_->lastIndex());
     response->set_term(node_->currentTerm());
 
+    return grpc::Status::OK;
+}
+
+/* ===============================
+   INSTALL SNAPSHOT
+=================================*/
+
+grpc::Status ReplicationServiceImpl::InstallSnapshot(
+    grpc::ServerContext *,
+    const kv::InstallSnapshotRequest *request,
+    kv::InstallSnapshotResponse *response)
+{
+    if (request->last_term() < node_->currentTerm())
+    {
+        response->set_success(false);
+        return grpc::Status::OK;
+    }
+
+    node_->updateTerm(request->last_term());
+
+    node_->installSnapshot(
+        request->data(),
+        request->last_index(),
+        request->last_term());
+
+    response->set_success(true);
     return grpc::Status::OK;
 }
 

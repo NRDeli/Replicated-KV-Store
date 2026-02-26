@@ -83,3 +83,32 @@ int ReplicationManager::requestVotes(
 
     return votes;
 }
+
+bool ReplicationManager::sendSnapshot(
+    const std::string &peer,
+    const std::string &data,
+    uint64_t lastIndex,
+    uint64_t lastTerm)
+{
+    auto channel = grpc::CreateChannel(
+        peer, grpc::InsecureChannelCredentials());
+
+    std::unique_ptr<kv::ReplicationService::Stub> stub =
+        kv::ReplicationService::NewStub(channel);
+
+    kv::InstallSnapshotRequest req;
+    kv::InstallSnapshotResponse resp;
+
+    req.set_data(data);
+    req.set_last_index(lastIndex);
+    req.set_last_term(lastTerm);
+
+    grpc::ClientContext ctx;
+
+    auto status = stub->InstallSnapshot(&ctx, req, &resp);
+
+    if (!status.ok())
+        return false;
+
+    return resp.success();
+}

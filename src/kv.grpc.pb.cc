@@ -127,6 +127,7 @@ KVService::Service::~Service() {
 
 static const char* ReplicationService_method_names[] = {
   "/kv.ReplicationService/Replicate",
+  "/kv.ReplicationService/InstallSnapshot",
 };
 
 std::unique_ptr< ReplicationService::Stub> ReplicationService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -137,6 +138,7 @@ std::unique_ptr< ReplicationService::Stub> ReplicationService::NewStub(const std
 
 ReplicationService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
   : channel_(channel), rpcmethod_Replicate_(ReplicationService_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_InstallSnapshot_(ReplicationService_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status ReplicationService::Stub::Replicate(::grpc::ClientContext* context, const ::kv::ReplicationPacket& request, ::kv::ReplicationAck* response) {
@@ -162,6 +164,29 @@ void ReplicationService::Stub::async::Replicate(::grpc::ClientContext* context, 
   return result;
 }
 
+::grpc::Status ReplicationService::Stub::InstallSnapshot(::grpc::ClientContext* context, const ::kv::InstallSnapshotRequest& request, ::kv::InstallSnapshotResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::kv::InstallSnapshotRequest, ::kv::InstallSnapshotResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_InstallSnapshot_, context, request, response);
+}
+
+void ReplicationService::Stub::async::InstallSnapshot(::grpc::ClientContext* context, const ::kv::InstallSnapshotRequest* request, ::kv::InstallSnapshotResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::kv::InstallSnapshotRequest, ::kv::InstallSnapshotResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_InstallSnapshot_, context, request, response, std::move(f));
+}
+
+void ReplicationService::Stub::async::InstallSnapshot(::grpc::ClientContext* context, const ::kv::InstallSnapshotRequest* request, ::kv::InstallSnapshotResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_InstallSnapshot_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::kv::InstallSnapshotResponse>* ReplicationService::Stub::PrepareAsyncInstallSnapshotRaw(::grpc::ClientContext* context, const ::kv::InstallSnapshotRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::kv::InstallSnapshotResponse, ::kv::InstallSnapshotRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_InstallSnapshot_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::kv::InstallSnapshotResponse>* ReplicationService::Stub::AsyncInstallSnapshotRaw(::grpc::ClientContext* context, const ::kv::InstallSnapshotRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncInstallSnapshotRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
 ReplicationService::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       ReplicationService_method_names[0],
@@ -173,12 +198,29 @@ ReplicationService::Service::Service() {
              ::kv::ReplicationAck* resp) {
                return service->Replicate(ctx, req, resp);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      ReplicationService_method_names[1],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< ReplicationService::Service, ::kv::InstallSnapshotRequest, ::kv::InstallSnapshotResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](ReplicationService::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::kv::InstallSnapshotRequest* req,
+             ::kv::InstallSnapshotResponse* resp) {
+               return service->InstallSnapshot(ctx, req, resp);
+             }, this)));
 }
 
 ReplicationService::Service::~Service() {
 }
 
 ::grpc::Status ReplicationService::Service::Replicate(::grpc::ServerContext* context, const ::kv::ReplicationPacket* request, ::kv::ReplicationAck* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status ReplicationService::Service::InstallSnapshot(::grpc::ServerContext* context, const ::kv::InstallSnapshotRequest* request, ::kv::InstallSnapshotResponse* response) {
   (void) context;
   (void) request;
   (void) response;
