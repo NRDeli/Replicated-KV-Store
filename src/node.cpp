@@ -94,6 +94,12 @@ void Node::appendFromLeader(const Operation &op)
     if (op.term < current_term_)
         return;
 
+    // Raft conflict repair:
+    if (op.index <= wal_->lastIndex())
+    {
+        wal_->truncateFrom(op.index - 1);
+    }
+
     wal_->append(op);
     last_index_.store(op.index);
 }

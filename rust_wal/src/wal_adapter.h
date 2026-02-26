@@ -22,6 +22,8 @@ extern "C"
                    const uint8_t *, size_t);
     uint64_t wal_count();
     int wal_read(uint64_t, WalEntry *);
+    uint64_t wal_last_index();
+    int wal_truncate_from(uint64_t);
 }
 
 class WALAdapter
@@ -33,6 +35,9 @@ public:
     std::vector<Operation> replay();
 
     const std::vector<Operation> &inMemoryLog() const { return cache_; }
+
+    uint64_t lastIndex() const;
+    void truncateFrom(uint64_t index);
 
 private:
     std::string file_;

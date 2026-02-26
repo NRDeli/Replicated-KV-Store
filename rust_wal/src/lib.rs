@@ -1,5 +1,5 @@
 use std::fs::{File, OpenOptions};
-use std::io::{Read, Write};
+use std::io::{Read, Write, Seek};
 use std::ptr;
 use std::sync::Mutex;
 use lazy_static::lazy_static;
@@ -147,5 +147,38 @@ pub extern "C" fn wal_read(
         (*entry).val_len = vlen;
     }
 
+    0
+}
+
+#[no_mangle]
+pub extern "C" fn wal_last_index() -> u64 {
+    GLOBAL
+        .lock()
+        .unwrap()
+        .as_ref()
+        .map(|w| w.entries.len() as u64)
+        .unwrap_or(0)
+}
+
+#[no_mangle]
+pub extern "C" fn wal_truncate_from(index: u64) -> i32 {
+    let mut g = GLOBAL.lock().unwrap();
+    let wal = g.as_mut().unwrap();
+
+    if index >= wal.entries.len() as u64 {
+        return 0;
+    }
+
+    wal.entries.truncate(index as usize);
+
+    // rewrite file from scratch
+    wal.file.set_len(0).unwrap();
+    wal.file.seek(std::io::SeekFrom::Start(0)).unwrap();
+
+    for rec in &wal.entries {
+        wal.file.write_all(rec).unwrap();
+    }
+
+    wal.file.flush().unwrap();
     0
 }

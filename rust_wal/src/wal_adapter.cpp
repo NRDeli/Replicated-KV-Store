@@ -41,3 +41,16 @@ std::vector<Operation> WALAdapter::replay()
     }
     return out;
 }
+
+uint64_t WALAdapter::lastIndex() const
+{
+    return wal_last_index();
+}
+
+void WALAdapter::truncateFrom(uint64_t index)
+{
+    wal_truncate_from(index);
+
+    if (index < cache_.size())
+        cache_.resize(index);
+}
