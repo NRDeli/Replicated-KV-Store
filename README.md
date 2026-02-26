@@ -1,172 +1,273 @@
-# ReplicatedKVStore — Raft-Inspired Fault-Tolerant Distributed Key-Value Store
+# ReplicatedKVStore — Raft-Style Fault-Tolerant Distributed Key-Value Store  
+**Hybrid C++ + Rust Storage Engine**
 
-ReplicatedKVStore is a fault-tolerant distributed key-value datastore implemented in C++ using gRPC.
-It demonstrates core distributed systems principles including leader election, majority quorum commit, log-based state machine replication, write-ahead logging (WAL) durability, crash recovery, and log backtracking.
+ReplicatedKVStore is a fault-tolerant distributed key-value datastore implementing Raft-style leader-based replication with a hybrid architecture:
 
-The system follows a Raft-inspired consensus design (simplified implementation) and operates as a replicated state machine.
+- **C++ layer:** consensus, replication, networking (gRPC)
+- **Rust layer:** write-ahead log (WAL), snapshots, compaction, crash recovery
+
+The system demonstrates production-grade distributed storage mechanics including quorum commit, durable WAL replication, snapshotting, streaming state transfer, and follower log repair.
+
 ---
 
 # ⚙️ Features
 
 - Leader election with randomized timeouts
 - Majority quorum commit (N/2 + 1)
-- Per-follower nextIndex tracking
-- Per-follower matchIndex tracking
-- Log backtracking for follower repair
-- Write-Ahead Log (WAL) durability
-- Crash recovery via WAL replay
-- Separation of commitIndex and lastApplied
-- gRPC-based inter-node communication
-- HTTP metrics endpoint for observability
-- Real multi-node cluster simulation
+- Per-follower `nextIndex` / `matchIndex`
+- WAL-backed durable replication
+- Crash recovery via WAL + snapshot replay
+- Log backtracking for divergence repair
+- Snapshot creation + log compaction
+- Streaming InstallSnapshot RPC
+- Follower catch-up via snapshot transfer
+- Rust memory-safe storage engine
+- gRPC inter-node communication
+- HTTP metrics endpoint
+- Multi-node cluster simulation
 
-This implementation focuses on core consensus mechanics while intentionally simplifying certain advanced Raft features.
 ---
 
 # 🏯 Architecture Overview
 
-ReplicatedKVStore follows a replicated state machine architecture.
+ReplicatedKVStore follows a hybrid architecture where Raft consensus and networking
+are implemented in C++, while durability and compaction are handled by a Rust WAL engine
+exposed via a C FFI boundary.
 
-Client → Leader → WAL Append → Replication → Followers → Apply to KV Store
-
-Each node consists of:
-- Node — Raft coordination layer
-- KVStore — In-memory state machine
-- WriteAheadLog (WAL) — Durability layer
-- ReplicationManager — gRPC replication client
-- ElectionService — Vote RPC handling
-- KVService — Client Put/Get RPC
-- Metrics Server — HTTP observability endpoint
-
-All cluster communication uses gRPC.
-Metrics are exposed separately via HTTP (port + 1000).
-
----
-
-## Figure 1: High-Level System Architecture
+## Figure 1 — Hybrid C++ / Rust Architecture
 ![ High-Level System Architecture](/media/architecture.png)
 
+Client → Leader → Rust WAL → Replication → Followers → Apply to KV Store
 
+Each node consists of:
 
-# 🧱 Components
+- **Node (C++)** — Raft coordination & state machine control  
+- **KVStore (C++)** — in-memory state machine  
+- **WALAdapter (C++)** — FFI bridge to Rust WAL  
+- **Rust WAL Engine** — durable log + snapshots  
+- **ReplicationManager (C++)** — gRPC replication client  
+- **gRPC Services** — KV / Replication / Election  
+- **Metrics Server** — HTTP observability  
 
-## Node
-Core coordination engine implementing Raft-inspired logic.
+All cluster communication uses gRPC.  
+Metrics are exposed via HTTP on `(port + 1000)`.
+
+---
+
+## Storage Layer (Rust WAL)
+
+The storage engine is implemented in Rust and exposed to C++ via a stable C ABI.
 
 Responsibilities:
-- Manage node role (Follower / Candidate / Leader)
-- Handle election timeouts
-- Send and process vote RPCs
-- Append operations to WAL
-- Replicate log entries to followers
-- Track nextIndex[] and matchIndex[]
-- Advance commitIndex via quorum
-- Apply committed entries to state machine
-- Recover state on startup
-- Expose internal metrics
 
----
-## Node State
+- Append-only log persistence
+- Crash-atomic entry writes
+- Snapshot creation & loading
+- Log truncation / compaction
+- Sequential replay
+- Snapshot-aware recovery
 
-Each node maintains the following core state:
+Each WAL entry stores:
+(index, term, key_len, value_len, key_bytes, value_bytes)
 
-Persistent:
-- Log entries (index, term, key, value)
+Durability guarantees:
 
-Volatile:
-- current_term
-- voted_for
-- commitIndex
-- lastApplied
-- nextIndex[] per follower
-- matchIndex[] per follower
-- role (Follower / Candidate / Leader)
+- Append is atomic
+- Partial entries detected & truncated
+- Replay deterministic after crash
+- Snapshot replaces log prefix
 
-These variables enforce replication safety and quorum commit correctness. Note: current_term and voted_for are currently volatile and reset on restart.
+The Rust WAL is the authoritative persistent state.
 
----
+# 🧱 Node Responsibilities
 
-## KVStore
-In‑memory key‑value database.
+The C++ Node implements Raft-style coordination:
 
-- HashMap‑based storage
-- O(1) reads and writes
-- Serves as the replicated state machine backend
-State changes occur only after entries are committed.
+- Role management (Follower / Candidate / Leader)
+- Election timeouts & voting
+- WAL append via Rust adapter
+- Per-follower replication
+- Majority commit advancement
+- State machine application
+- Snapshot triggering
+- Recovery orchestration
+- Metrics exposure
 
----
+Persistent state:
 
-## WriteAheadLog (WAL)
-Durability layer.
+- WAL entries (Rust)
+- Snapshot (Rust)
 
-- Append-only file
-- Stores serialized log entries (index, term, key, value)
-- Ensures writes are persisted before replication
-- Replayed on crash recovery
+Volatile state:
 
-Durability model:
-- Append before replication
-- Deterministic replay on restart
+- `current_term`
+- `voted_for`
+- `commitIndex`
+- `lastApplied`
+- `nextIndex[]`
+- `matchIndex[]`
+- `role`
 
 ---
 
-## ReplicationManager
-Leader–Follower replication logic.
+# 🔁 Replication Protocol
 
-Leader:
-- Sends replication RPCs to followers
-- Tracks nextIndex per follower
-- Tracks matchIndex per follower
-- Retries replication on mismatch
-- Supports basic log backtracking
+Leader-driven log replication.
+
+On client write:
+
+1. Leader receives Put
+2. Append entry to Rust WAL
+3. Replicate entry to followers
+4. Update `matchIndex`
+5. Backtrack on mismatch
+6. Advance `commitIndex` via quorum
+7. Apply committed entry to KVStore
+
+Replication is synchronous per write.
+## Figure 2 — Replication & Majority Commit Flow
+![Replication & Majority Commit Flow](/media/replication-and-majority-commit-flow.png)
+
+---
+
+# 🧮 Majority Commit Rule
+
+Leader advances commitIndex when:
+```
+count(matchIndex ≥ N) > cluster_size / 2
+```
+Search from highest index downward:
+```
+for N = last_index → commit_index:
+    if quorum(matchIndex ≥ N):
+        commit_index = N
+```
+
+Invariants:
+- `commitIndex ≤ lastIndex`
+- Entries applied only after commit
+- Majority quorum ensures safety
+
+---
+
+# 🔄 Log Backtracking
+
+If follower replication fails:
+
+- Leader decrements `nextIndex[f]`
+- Retries replication
+- Rust WAL truncates conflicting suffix
+- Follower log converges
+
+This repairs divergence and guarantees eventual convergence.
+
+---
+
+# 💾 Snapshot & Log Compaction
+
+Snapshots are created from committed state:
+```
+snapshot = serialize(KVStore at commitIndex)
+```
+Rust WAL:
+
+- Persists snapshot file
+- Records snapshot index
+- Truncates log below snapshot
+- Rewrites remaining entries
+
+Followers behind snapshot receive snapshot via streaming RPC.
+
+---
+
+# 📡 Streaming InstallSnapshot
+
+Large snapshots are transferred in chunks:
+
+Leader → stream InstallSnapshotChunk → Follower
+
+Each chunk contains:
+
+- data bytes
+- last_index
+- last_term
+- done flag
 
 Follower:
-- Appends entries to WAL
-- Updates local log index
-- Applies entries only after commit notification
 
-Consistency model: **Leader-based majority quorum replication**
+1. Reassembles snapshot
+2. Replaces KV state
+3. Compacts WAL
+4. Updates indices
+
+This enables fast follower catch-up.
 
 ---
 
-## gRPC Services
+# 🔄 Recovery Model
 
-### 1. KV Service
-Client-facing API:
-- Put(key, value)
-- Get(key)
+On startup:
 
-Writes are accepted only by leader.
+1. Load snapshot (Rust)
+2. Restore KVStore
+3. Replay WAL entries after snapshot
+4. Restore lastIndex
+5. Set commitIndex
+6. Set lastApplied
 
-### 2. Replication Service
-Leader → Follower replication RPC.
-Used to:
-- Ship log entries
-- Advance follower state
-- Propagate commit index
+Guarantees:
 
-### 3. Election Service
-Implements RequestVote RPC.
+- Committed writes survive crash
+- Snapshot + WAL define state
+- Deterministic reconstruction
 
-Used during election phase:
-- Candidate requests votes
-- Followers grant or deny votes
-- Majority determines leader
+---
 
-Election Safety:
+# 🔐 Safety Invariants
 
-- At most one leader can be elected per term due to majority quorum voting.
-- Term numbers strictly increase across elections.
-- A candidate must receive > N/2 votes to transition to LEADER.
-- Followers reject stale-term vote requests.
+The system enforces:
 
-### Figure 2: Leader Election Sequence
-![Leader Election Sequence](/media/leader-election-sequence.png)
+1. At most one leader per term  
+2. Entry committed only after majority replication  
+3. Committed entries applied in order  
+4. No uncommitted entry applied  
+5. commitIndex ≤ lastIndex  
+6. WAL append-only (except compaction)  
+7. Snapshot replaces only committed prefix  
 
-### 4. Metrics Server
-Lightweight HTTP server implemented via POSIX sockets.
+These ensure deterministic replicated state machine behavior.
 
-Exposes internal Raft state:
+---
+
+# ⚡ Failure Handling
+
+Leader crash:
+
+- Followers timeout
+- New election
+- New leader continues from WAL
+
+Follower crash:
+
+- WAL + snapshot recovery
+- Leader backtracks or sends snapshot
+
+Divergence:
+
+- nextIndex decrement
+- WAL truncate
+- Re-replicate
+
+Lagging follower:
+
+- Snapshot transfer
+- Resume replication
+
+---
+
+# 📊 Metrics
+
+Exposed via HTTP:
 - raft_role
 - raft_term
 - raft_commit_index
@@ -180,217 +281,101 @@ Example:
 curl localhost:51051
 ```
 
-Role mapping:
+Role:
+
 - 0 = FOLLOWER
 - 1 = CANDIDATE
 - 2 = LEADER
 
 ---
 
-# 🔁 Replication Protocol
+# ⚠️ Raft Simplifications
 
-Leader‑driven log replication.
+This is Raft-style but not full Raft.
 
-On client write:
-1. Leader receives Put request
-2. Append entry to WAL
-3. Send replication RPC to each follower
-4. Update matchIndex on success
-5. Decrement nextIndex on failure (backtracking)
-6. Advance commitIndex when quorum reached
-7. Apply committed entries to KVStore
+Implemented:
 
-Replication is synchronous per write.
+- Leader election
+- Majority commit
+- Log backtracking
+- Snapshot + InstallSnapshot
+- Durable WAL
+- Follower catch-up
 
-## Figure 3 — Replication & Majority Commit
-![Replication & Majority Commit](/media/replication-and-majority-commit-flow.png)
+Not implemented:
 
----
+- Persistent term/vote
+- prevLogTerm validation
+- Membership changes
+- Linearizable reads
+- Network partition tests
 
-# 🧮 Majority Commit Algorithm
-
-The leader advances commitIndex when:
-Number of nodes with matchIndex >= N > cluster_size / 2
-
-Commit Rule:
-```
-For N from last_index down to commit_index:
-    if count(matchIndex >= N) > cluster_size/2:
-        commit_index = N
-```
-Key invariants:
-- commitIndex ≤ highest replicated index
-- Entries applied only after commit
-- Majority quorum ensures safety
-
-Separation of:
-- commitIndex (replicated)
-- lastApplied (state machine progress)
-
-ensures correct ordering and crash safety.
+Focus: core replicated storage mechanics.
 
 ---
-
-# 🔄 Log Backtracking
-
-If replication to a follower fails:
-- Decrement that follower’s nextIndex
-- Retry replication with earlier log entry
-
-This ensures:
-- Lagging followers converge
-- Log divergence is repaired
-- Eventual consistency within cluster
-
-This is a simplified variant of Raft log repair.
-
-# 💾 Persistence Model
-
-All writes are persisted before replication.
-
-Crash recovery process:
-1. Read WAL file
-2. Reconstruct in-memory log
-3. Replay operations sequentially
-4. Restore KV state
-5. Restore commitIndex and lastApplied
-
-Guarantees:
-- Committed writes survive crashes
-- Deterministic state reconstruction
-- Durable majority replication
-
-# 🦾 Consistency Model
-
-ReplicatedKVStore provides:
-
-- Leader-based majority quorum writes
-- Ordered log replication
-- Deterministic state machine application
-- Single-leader write authority
-
-Under normal operation (no partitions), committed writes are consistent across the cluster.
-
-This implementation approximates Raft-style safety but does not implement full linearizability guarantees under all failure scenarios.
-
-
-# 🔐 Safety Invariants
-
-The system enforces the following invariants:
-
-1. At most one leader per term.
-2. An entry is committed only if replicated on majority.
-3. Committed entries are applied in order.
-4. No uncommitted entry is applied to the state machine.
-5. commitIndex ≤ last replicated index.
-6. Log entries are append-only.
-
-These invariants ensure deterministic and safe state machine replication.
-
-# ⚡ Failure Handling
-
-Leader Crash:
-- Followers detect election timeout.
-- New election is triggered.
-- New leader elected via majority vote.
-
-Follower Crash:
-- Leader continues replication.
-- Upon restart, follower replays WAL.
-- nextIndex backtracking repairs divergence.
-
-Crash During Replication:
-- Only majority-replicated entries are committed.
-- Uncommitted entries are not applied.
-
-# ⚠️ Simplifications (Raft-inspired model)
-
-This implementation is intentionally simplified.
-
-Partially Implemented:
-- Log conflict resolution without full prevLogIndex/prevLogTerm validation
-- Simplified heartbeat logic
-- Minimal HTTP metrics server (not full Prometheus exporter)
-
-Not Implemented:
-- Snapshotting / log compaction
-- InstallSnapshot RPC
-- Persistent current_term and voted_for
-- Dynamic cluster membership
-- Full prevLogTerm conflict overwrite logic
-- Network partition simulation
-
-The project focuses on core consensus mechanics rather than full production Raft compliance.
 
 # 🧪 Running a Cluster
 
-## Build 
+## Build
 ```
 rm -rf build
-mkdir build
-cd build
-cmake ..
-make
+cmake -S . -B build
+cmake --build build -j
 ```
-
-## Start 3 Nodes
-Terminal 1:
+## Start 3 nodes
 ```
 ./build/server 50051
-```
-Terminal 2:
-```
 ./build/server 50052
-```
-Terminal 3:
-```
 ./build/server 50053
 ```
-
-## Check Leader
+## Check leader
 ```
 curl localhost:51051
 curl localhost:51052
 curl localhost:51053
 ```
-
-Exactly one node should report 
+Exactly one:
 ```
 raft_role 2
 ```
 ---
 
-## Test Failover
-1. Identify leader
-2. Kill leader process
-3. Wait 2 seconds
-4. Check metrics again
-A new leader will be elected automatically.
+# 📚 Distributed Systems Concepts
 
-# 📚 Distributed Systems Concepts Demonstrated
 - Replicated state machines
 - Leader election
 - Majority quorum commit
-- Log replication
-- Log backtracking
-- Write-ahead logging
+- WAL durability
+- Snapshotting & compaction
+- Streaming state transfer
+- Log repair
 - Crash recovery
-- RPC-based distributed communication
-- Failure detection via timeout
-- Observability integration
+- Consensus replication
+- gRPC distributed communication
+
+---
 
 # 🎯 Resume Value
-ReplicatedKVStore demonstrates:
-- Distributed systems architecture design
-- Implementation of Raft-inspired consensus mechanics
-- Majority quorum commit logic
-- Fault tolerance and crash recovery
-- Write-ahead logging durability
-- Concurrency and atomic state management
-- gRPC-based inter-node communication
-- Systems-level debugging and observability design
 
+ReplicatedKVStore demonstrates:
+
+- Raft-style consensus implementation
+- Hybrid C++/Rust systems integration
+- Durable WAL & snapshot engine
+- Distributed replication protocols
+- Follower repair & compaction
+- Crash-safe storage design
+- gRPC distributed architecture
+- Observability & metrics
+- Systems-level debugging
+
+---
 # Known Limitations
 
-This implementation does not guarantee safety under network partitions
-due to lack of persistent term/vote storage and full conflict resolution.
+- Term/vote not persisted
+- Partial Raft conflict logic
+- No membership changes
+- No partition tolerance testing
+- No read linearizability
+
+The project targets storage-layer correctness and replication mechanics rather than full Raft compliance.
